@@ -1,0 +1,187 @@
+= Miscellaneous tutorial material
+:page-pagination:
+:url-api: https://stephengold.github.io/Minie/javadoc/master/com/jme3/bullet
+:url-examples: https://github.com/stephengold/Minie/blob/master/MinieExamples/src/main/java/jme3utilities/minie/test
+
+This page acts as a holding area for tutorial material that's waiting
+to be organized.
+
+== Startup message
+
+By default, the native library prints a startup message to `System.out`.
+Once the library is loaded (but not started) you can disable this message:
+
+[source,java]
+----
+NativeLibrary.setStartupMessageEnabled(false);
+----
+
+== Library versions and properties
+
+Once the native library is loaded,
+you can test whether it uses double-precision arithmetic:
+
+[source,java]
+----
+boolean doublePrecision = NativeLibrary.isDoublePrecision();
+----
+
+You can also test whether it was built for debugging
+(with assertions enabled, symbols not stripped,
+and debug information generated):
+
+[source,java]
+----
+boolean debug = NativeLibrary.isDebug();
+----
+
+You can also read the native library's version string,
+which consists of 3 decimal numbers separated by dots:
+
+[source,java]
+----
+String nativeVersion = NativeLibrary.versionNumber();
+----
+
+Java code can also read the Minie version string,
+which consists of 2 words separated by a space:
+
+[source,java]
+----
+import jme3utilities.minie.MinieVersion;
+
+String minieVersion = MinieVersion.versionShort();
+----
+
+== Dedicated physics thread
+
+By default, the physics simulation runs on the render thread.
+To execute it on a dedicated thread, use:
+
+[source,java]
+----
+bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
+----
+
+== Simulation speed
+
+By default, simulation advances based on the time per frame (tpf)
+reported by the renderer.
+To advance the physics simulation at a different rate, use:
+
+[source,java]
+----
+bulletAppState.setSpeed(0.5f); // simulate physics at half speed
+----
+
+== Default collision margin
+
+The default collision margin for new shapes is 0.04 physics-space units.
+To configure a default margin of 0.1 psu:
+
+[source,java]
+----
+CollisionShape.setDefaultMargin(0.1f);
+----
+
+NOTE: The Bullet Manual advises against changing the default margin.
+
+== Broadphase types
+
+By default, a Dynamic Bounding-Volume Tree (DBVT) is used for broadphase
+collision detection.
+To specify a different data structure, use `setBroadphaseType()`
+on the appstate:
+
+[source,java]
+----
+SoftPhysicsAppState bas = new SoftPhysicsAppState();
+bas.setBroadphaseType(PhysicsSpace.BroadphaseType.AXIS_SWEEP_3);
+bas.setWorldMax(new Vector3f(1000f, 10f, 1000f));
+bas.setWorldMin(new Vector3f(-1000f, -10f, -1000f));
+stateManager.attach(bas);
+PhysicsSoftSpace physicsSpace = bas.getPhysicsSoftSpace();
+----
+
+NOTE: The world max/min bounds are used
+only by the `AXIS_SWEEP_3` and `AXIS_SWEEP_3_32` broadphase algorithms.
+The `SIMPLE` and `DBVT` algorithms ignore those parameters.
+
+
+== Contact-and-constraint solver
+
+=== Algorithms
+
+By default, a
+http://allenchou.net/2013/12/game-physics-constraints-sequential-impulse[Sequential Impulse (SI) solver]
+is used to resolve contacts and constraints.
+To specify a different algorithm, invoke `setSolverType()`
+before attaching the AppState. For instance:
+
+[source,java]
+----
+bulletAppState.setSolverType(SolverType.Dantzig);
+----
+
+NOTE: For soft-body simulations, SI is the only supported solver type.
+
+NOTE: The NNCG solver doesn't support multibodies.
+
+=== Tuning parameters
+
+The contact-and-constraint solver
+performs a limited number of iterations per time step,
+by default, 10.
+For higher-quality (but slower) simulation, increase this number.
+For instance, to use 20 iterations:
+
+[source,java]
+----
+space.getSolverInfo().setNumIterations(20);
+----
+
+Other solver parameters can be tuned, including:
+
+* the global error reduction parameter (ERP) for physics joints,
+  described on xref:new6dof.adoc#_caveats[the New6Dof page]
+* the contact ERP
+* the constraint-force mixing parameter (CFM)
+* the batch size
+* the mode flags,
+  which enable warm start, constraint ordering, and other features
+* the flag to enable the split-impulse feature
+
+
+== Advanced rigid-body friction
+
+In addition to the basic friction parameter (which affects sliding friction)
+each rigid body has 2 additional friction parameters:
+one for rolling friction and one for spinning friction.
+Both parameters default to zero.
+
+_Rolling friction_ generates torque orthogonal to the contact normal,
+which tends to slow down a rolling body.
+_Spinning friction_ generates torque parallel to the contact normal,
+which tends to prevent a body from spinning when grasped.
+
+To see rolling and spinning friction in action, run
+{url-examples}/PoolDemo.java[the PoolDemo application].
+
+To simulate objects with grooved surfaces, it's also possible to configure
+a rigid body for _anisotropic friction_:
+friction that depends on the direction of relative motion.
+
+
+== Gear joint
+
+{url-api}/joints/GearJoint.html[`GearJoint`] implements
+a special type of constraint used to simulate rotating shafts
+linked by belts, cables, chains, or gears.
+Unlike other constraints, it has no pivot points, only axes.
+It's a double-ended constraint
+with a single rotational degree-of-freedom.
+The rotational rate of the A body around its axis
+is matched to that of the B body around its axis, or made proportional.
+
+To see a gear joint in action, run
+{url-examples}/TestGearJoint.java[the TestGearJoint application].

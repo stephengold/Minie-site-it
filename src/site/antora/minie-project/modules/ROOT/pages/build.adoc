@@ -1,0 +1,230 @@
+= How to build Minie from source
+:Project: Minie
+
+{Project} is free, open-source software.
+
+While pre-built artifacts
+can be downloaded from GitHub and the Maven Central Repository,
+some people prefer to build them from source.
+
+You can also build a local copy of the documentation (website content).
+This is useful if you are editing the content,
+or if your Internet access is limited or unreliable.
+
+
+== Library artifacts
+
+=== Standard build
+
+The _standard build_ of the Minie library includes a non-debug,
+single-precision native library for each of the 13 platforms Minie supports.
+
+Here's the recommended procedure:
+
+. Install a https://adoptium.net/releases.html[Java Development Kit (JDK)],
+  if you don't already have one.
+. Point the `JAVA_HOME` environment variable to your JDK installation:
+  (The path might be something like "C:\Program Files\Java\jre1.8.0_301"
+  or "/usr/lib/jvm/java-8-openjdk-amd64/" or
+  "/Library/Java/JavaVirtualMachines/liberica-jdk-17-full.jdk/Contents/Home" .)
+.. using Bash or Zsh: `export JAVA_HOME="` *path to installation* `"`
+.. using Windows Command Prompt: `set JAVA_HOME="` *path to installation* `"`
+.. using PowerShell: `$env:JAVA_HOME = '` *path to installation* `'`
+. Download and extract the {Project} source code from GitHub:
+.. using Git:
+... `git clone https://github.com/stephengold/Minie.git`
+... `cd Minie`
+... `git checkout -b latest 7.5.0`
+.. using a web browser:
+... browse to https://github.com/stephengold/Minie/releases/latest
+... follow the "Source code (zip)" link
+... save the ZIP file
+... extract the contents of the saved ZIP file
+... `cd` to the extracted directory
+. Run the Gradle wrapper to build the entire project:
+.. using Bash or PowerShell or Zsh: `./gradlew build`
+.. using Windows Command Prompt: `.\gradlew build`
+
+After a successful build,
+artifacts will be found in the "MinieLibrary/build/libs" directory.
+
+=== Quicker builds
+
+In addition to the library, the Minie project includes subprojects for
+assets and applications that take time to build.
+To save time, you can build just the library subproject:
+
+* using Bash or PowerShell or Zsh: `./gradlew :MinieLibrary:build`
+* using Windows Command Prompt: `.\gradlew :MinieLibrary:build`
+
+To save even more time, you can skip the automated tests:
+
+* using Bash or PowerShell or Zsh: `./gradlew :MinieLibrary:assemble`
+* using Windows Command Prompt: `.\gradlew :MinieLibrary:assemble`
+
+=== Install artifacts
+
+You can install the built artifacts to your local Maven repository:
+
+* using Bash or PowerShell or Zsh: `./gradlew install`
+* using Windows Command Prompt: `.\gradlew install`
+
+=== Cleanup
+
+After a build, you can restore the project to a pristine state:
+
+* using Bash or PowerShell or Zsh: `./gradlew clean`
+* using Windows Command Prompt: `.\gradlew clean`
+
+== Customizing native libraries
+
+The standard build is very convenient.
+However, it's sub-optimal for many situations.
+
+=== Debug builds
+
+During application development, debug-enabled native libraries should be used.
+Most Minie releases provide a "+debug" build of the library for this purpose.
+You can replicate it by adding the "-Pbtdebug" option to the build command:
+
+* using Bash or PowerShell or Zsh: `./gradlew -Pbtdebug clean build`
+* using Windows Command Prompt: `.\gradlew -Pbtdebug clean build`
+
+NOTE: Don't confuse the "-Pbtdebug" option with "-Pdebug",
+which had special significance to certain old versions of Gradle.
+
+=== Double-precision builds
+
+Some applications may benefit from double-precision native libraries.
+Most Minie releases provide "+dp" and "+debugdp" builds of the library,
+which you can replicate by adding the "-Pdp" option to the build command.
+
+=== Multithreaded builds
+
+Some applications may benefit from multithreaded native libraries.
+Some Minie releases provide "+mt" builds of the library,
+which you can replicate by specifying the "-Pmt" option in the build command.
+
+=== Reduced builds
+
+Supporting 13 platforms requires 13 native libraries,
+which results in a big, fat JAR and (potentially) a bloated application.
+To address bloat, some Minie releases provide reduced builds that
+don't support all 13 platforms.
+These include:
+
+* A "+big3" build (created using the "-Pbig3" option)
+  with support for just the 3 main platforms (Linux64, MacOSX64, and Windows64).
+* A "+bare" build (created using the "-Pbare" option)
+  which doesn't include *any* native libraries.
+* A "+droid" build (created using the "-Pdroid" option)
+  with support for just the 4 Android platforms.
+
+=== Further customization
+
+You can customize Minie to include precisely the native libraries you need.
+
+To configure which native libraries will be included in the JAR,
+edit the "MinieLibrary/build.gradle" script.
+Look for the section where the `btf` variables are set.
+It should look something like this:
+
+[source,groovy]
+----
+btfAndroid_ARM7 = 'ReleaseSp'
+btfAndroid_ARM8 = 'ReleaseSp'
+btfAndroid_X86 = 'ReleaseSp'
+btfAndroid_X86_64 = 'ReleaseSp'
+btfLinux32 = 'ReleaseSp'
+btfLinux64 = 'ReleaseSp'
+btfLinux_ARM32 = 'hfReleaseSp'
+btfLinux_ARM64 = 'ReleaseSp'
+btfMacOSX32 = 'ReleaseSp'
+btfMacOSX64 = 'ReleaseSp'
+btfMacOSX_ARM64 = 'ReleaseSp'
+btfWindows32 = 'ReleaseSp'
+btfWindows64 = 'ReleaseSp'
+----
+
+For example, to include only the 64-bit Linux native library,
+change the other `btf` variables to `''` and rebuild:
+
+[source,groovy]
+----
+btfAndroid_ARM7 = ''
+btfAndroid_ARM8 = ''
+btfAndroid_X86 = ''
+btfAndroid_X86_64 = ''
+btfLinux32 = ''
+btfLinux64 = 'ReleaseSp'
+btfLinux_ARM32 = ''
+btfLinux_ARM64 = ''
+btfMacOSX32 = ''
+btfMacOSX64 = ''
+btfMacOSX_ARM64 = ''
+btfWindows32 = ''
+btfWindows64 = ''
+----
+
+Similarly, you could customize Minie
+with the debug-enabled native library for a specific platform:
+
+[source,groovy]
+----
+btfAndroid_ARM7 = ''
+btfAndroid_ARM8 = ''
+btfAndroid_X86 = ''
+btfAndroid_X86_64 = ''
+btfLinux32 = ''
+btfLinux64 = ''
+btfLinux_ARM32 = ''
+btfLinux_ARM64 = ''
+btfMacOSX32 = ''
+btfMacOSX64 = ''
+btfMacOSX_ARM64 = ''
+btfWindows32 = ''
+btfWindows64 = 'DebugSp'
+----
+
+Similarly, you can specify double-precision (Dp-flavored) native libraries
+for specific platforms:
+
+[source,groovy]
+----
+btfAndroid_ARM7 = ''
+btfAndroid_ARM8 = ''
+btfAndroid_X86 = ''
+btfAndroid_X86_64 = ''
+btfLinux32 = ''
+btfLinux64 = 'ReleaseDp'
+btfLinux_ARM32 = ''
+btfLinux_ARM64 = ''
+btfMacOSX32 = ''
+btfMacOSX64 = 'ReleaseDp'
+btfMacOSX_ARM64 = 'ReleaseDp'
+btfWindows32 = ''
+btfWindows64 = 'ReleaseDp'
+----
+
+[NOTE]
+====
+Native libraries aren't published for every possible combination of options.
+For instance, if you want Dp native libraries for Android platforms,
+you'll probably have to build them yourself.
+For more information,
+see https://github.com/stephengold/Libbulletjme[the Libbulletjme project].
+====
+
+== Website content
+
+. Download and extract the source code from GitHub:
+.. `git clone https://github.com/stephengold/Minie-site-it.git`
+.. `cd Minie-site-it`
+. Edit "src/site/antora/playbook.yml" and replace "/home/sgold/NetBeansProjects/Minie-site-it"
+  with an absolute path to your checkout directory (3 places).
+. https://docs.antora.org/antora/latest/install-and-run-quickstart/#install-nodejs[Install Node.js]
+. Run Antora:
+.. `npx antora src/site/antora/playbook.yml`
+
+After a successful build,
+the local copy of the site will be found in the "build/site" directory.

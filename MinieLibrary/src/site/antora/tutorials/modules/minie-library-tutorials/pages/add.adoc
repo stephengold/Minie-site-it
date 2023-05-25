@@ -1,0 +1,334 @@
+= How to add Minie to an existing project
+:Project: Minie
+:experimental:
+:page-pagination:
+:url-api: https://stephengold.github.io/Minie/javadoc/master/com/jme3/bullet
+
+TIP: If you're creating a JMonkeyEngine desktop application from scratch,
+https://github.com/stephengold/BasicGame-on-Gradle[the BasicGame-on-Gradle project]
+provides a good starting point.
+
+Adding {Project} to an existing JMonkeyEngine project is a 7-step process:
+
+. Remove any libraries that might interfere with Minie.
+. Add libraries to the classpath.
+. Load the native library.
+. Create, configure, and attach
+  a {url-api}/BulletAppState.html[`BulletAppState`],
+  if the application doesn't already do so.
+. Configure the {url-api}/PhysicsSpace.html[`PhysicsSpace`],
+  if the application doesn't already do so.
+. Create physics controls, collision objects,
+  and joints and add them to the physics space,
+  if the application doesn't already do so.
+. Test and tune as necessary.
+
+== Remove libraries that might interfere
+
+If any directory where the application might run contains files
+named "libbulletjme.so" or "bulletjme.dll" or "libbulletjme.dylib",
+you should remove those files.
+Those filenames are used by JMonkeyEngine when it loads the native library,
+and you don't want it to load the wrong one!
+
+Also, Minie replaces (and is thus incompatible with) the following
+JMonkeyEngine libraries:
+
+* jme3-bullet
+* jme3-bullet-native
+* jme3-bullet-native-android, and
+* jme3-jbullet.
+
+Before adding Minie, you should remove these libraries from the project so
+they won't interfere with Minie.
+
+=== Gradle-built projects
+
+. Look for artifacts with those names in the `dependencies` section(s)
+  of the project's "*.gradle" file(s).
+. Remove those dependencies.
+
+=== Maven-built projects
+
+. Look for artifacts with those IDs in the `dependencies` section(s)
+  of the project's "pom.xml" file.
+. Remove those dependencies.
+
+=== Ant-built projects
+
+Open the project's properties in the IDE (JME SDK or NetBeans):
+
+. Right-click on the project (not its assets) in the "Projects" window.
+. Select menu:Properties[] to open the "Project Properties" dialog.
+. Under "Categories:", click on btn:[Libraries].
+. Click on the btn:[Compile] tab.
+. Look for incompatible libraries in the "Compile-time Libraries"
+  listbox.  Select them and click on the btn:[Remove] button.
+. Click on the btn:[OK] button to exit the "Project Properties" dialog.
+
+== Add libraries to the classpath
+
+{Project} comes pre-built as a single library that includes both Java classes
+and native libraries.
+The {Project} library depends on:
+
+* the standard jme3-terrain library,
+* https://github.com/Simsilica/SimMath[Simsilica's SimMath library], and
+* https://github.com/stephengold/Heart[the Heart library],
+
+and those libraries depend on other JVM libraries.
+
+For projects built using Gradle or Maven, it's usually sufficient to specify the
+dependency on the {Project} Library.  Build tools should automatically
+resolve the remaining dependencies.
+
+=== Gradle-built projects
+
+Add to the project's "build.gradle" file:
+
+[source,groovy]
+----
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'com.github.stephengold:Minie:7.5.0'
+}
+----
+
+For some older versions of Gradle,
+it's necessary to replace `implementation` with `compile`.
+
+=== Maven-built projects
+
+Add to the project's "pom.xml" file:
+
+[source,xml]
+----
+<repositories>
+    <repository>
+      <id>mvnrepository</id>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+</repositories>
+
+<dependency>
+  <groupId>com.github.stephengold</groupId>
+  <artifactId>Minie</artifactId>
+  <version>7.5.0</version>
+</dependency>
+----
+
+=== Ant-built projects
+
+https://ant.apache.org[Ant] doesn't know about transitive dependencies,
+so you'll need to resolve them manually.
+Furthermore, in order to use the latest {Project} release,
+you'll need version 3.6.0 JMonkeyEngine libraries.
+(You can still use a JME 3.2 or 3.3 SDK, however.)
+For more information about the libraries {Project} depends on,
+see xref:ROOT:depends.adoc[the Library version dependencies page].
+
+Download the {Project} library and its dependencies
+from GitHub and/or Maven Central:
+
+* https://github.com/stephengold/Minie/releases/latest
+* https://github.com/stephengold/Heart/releases/tag/8.3.2
+* https://github.com/Simsilica/SimMath/releases/tag/sim-math-v1.6.0
+* https://repo1.maven.org/maven2/org/jmonkeyengine/jme3-core/3.6.0-stable/
+* https://repo1.maven.org/maven2/org/jmonkeyengine/jme3-terrain/3.6.0-stable/
+* https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.32/
+
+You'll definitely want the class JARs
+and probably the "-sources" and "-javadoc" JARs as well.
+
+Open the project's properties in the IDE (JME SDK or NetBeans):
+
+. Right-click on the project (not its assets) in the "Projects" window.
+. Select menu:Properties[] to open the "Project Properties" dialog.
+. Under "Categories:", click on btn:[Libraries].
+. Click on the btn:[Compile] tab.
+. Add the Heart class JAR:
+.. Click on the btn:[Add JAR/Folder] button.
+.. Navigate to the download directory.
+.. Select the "Minie-7.5.0.jar" file.
+.. Click on the btn:[Open] button.
+. (optional) Add JARs for javadoc and sources:
+.. Click on the btn:[Edit] button.
+.. Click on the btn:[Browse...] button to the right of "Javadoc:"
+.. Select the "Minie-7.5.0-javadoc.jar" file.
+.. Click on the btn:[Open] button.
+.. Click on the btn:[Browse...] button to the right of "Sources:"
+.. Select the "Minie-7.5.0-sources.jar" file.
+.. Click on the btn:[Open] button button again.
+.. Click on the btn:[OK] button to close the "Edit Jar Reference" dialog.
+. Add the other JVM libraries in a similar manner.
+. Click on the btn:[OK] button to exit the "Project Properties" dialog.
+
+== Load the native library
+
+In a conventional JMonkeyEngine application,
+the required native libraries get loaded automatically by `Application.start()`.
+
+If your application doesn't invoke `Application.start()`,
+load Minie's native library before instantiating any physics objects:
+
+[source,java]
+----
+NativeLibraryLoader.loadNativeLibrary("bulletjme", true);
+----
+
+For Minie to work on Android platforms running Marshmallow (6.0) or higher,
+make sure the `extractNativeLibs` flag is set to `true`
+in the "application" element of the "AndroidManifest.xml" manifest.
+
+== Attach a `BulletAppState`
+
+Strictly speaking, Minie doesn't require a
+{url-api}/BulletAppState.html[`BulletAppState`].
+However, the appstate *does* provide a convenient interface
+for configuring, accessing, updating, and debugging
+a {url-api}/PhysicsSpace.html[`PhysicsSpace`].
+
+If the application already has
+a {url-api}/BulletAppState.html[`BulletAppState`],
+that code might work with Minie.
+If not, here is a snippet to guide you:
+
+[source,java]
+----
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
+
+// ...
+
+@Override
+public void simpleInitApp() {
+    BulletAppState bulletAppState = new BulletAppState();
+    stateManager.attach(bulletAppState);
+----
+
+[CAUTION]
+====
+Initialization order matters.
+A `BulletAppState` can't be instantiated until the native library is loaded,
+which (for desktop apps) occurs during `Application.start()`.
+That's why the following snippet fails:
+
+[source,java]
+----
+static BulletAppState bulletAppState = new BulletAppState();
+----
+====
+
+By default, debug visualization is disabled. To enable it, use:
+
+[source,java]
+----
+bulletAppState.setDebugEnabled(true); // default=false
+----
+
+Other {url-api}/BulletAppState.html[`BulletAppState`] parameters,
+used to customize debug visualization,
+are described on xref:debug.adoc[the troubleshooting page].
+
+Techniques to simulate physics without using
+{url-api}/BulletAppState.html[`BulletAppState`]
+are described on xref:server.adoc[the physics-without-appstates page].
+
+== Configure the `PhysicsSpace`
+
+Attaching a {url-api}/BulletAppState.html[`BulletAppState`] instantiates a
+{url-api}/PhysicsSpace.html[`PhysicsSpace`] that
+the application can access immediately:
+
+[source,java]
+----
+PhysicsSpace space = bulletAppState.getPhysicsSpace();
+----
+
+Physics simulation can run with a fixed time step or a variable time step.
+The default configuration is a fixed time step of 1/60th of a second
+with up to 4 time steps per frame.
+
+To configure a variable time step with a maximum of 0.25 seconds:
+
+[source,java]
+----
+space.setMaxSubSteps(0);
+space.setMaxTimeStep(0.25f);
+----
+
+To configure a fixed time step of 0.01 second with up to 6 time steps per frame:
+
+[source,java]
+----
+space.setAccuracy(0.01f);
+space.setMaxSubSteps(6);
+----
+
+NOTE: `setAccuracy()` has no effect when `maxSubSteps==0`,
+while `setMaxTimeStep()` has no effect when `maxSubSteps>0`.
+
+Each physics space has a gravity vector,
+which is typically applied to bodies as they get added to the space.
+To simulate a zero-gravity environment,
+set the gravity of the space to zero:
+
+[source,java]
+----
+space.setGravity(Vector3f.ZERO);
+----
+
+== Create and add collision objects
+
+Collision objects come in many different types:
+
+* bodies (`PhysicsBody`)
+** soft bodies (`PhysicsSoftBody`)
+** rigid bodies (`PhysicsRigidBody`)
+*** vehicles (`PhysicsVehicle`)
+* ghost objects (`PhysicsGhostObject`)
+* characters (`PhysicsCharacter`)
+* colliders (`MultiBodyCollider`)
+
+You can either create them directly, using the constructors:
+
+[source,java]
+----
+float radius = 2f;
+CollisionShape sphere2 = new SphereCollisionShape(radius);
+PhysicsGhostObject ghost1 = new PhysicsGhostObject(sphere2);
+float mass = 1f;
+PhysicsRigidBody body1 = new PhysicsRigidBody(sphere2, mass);
+----
+
+or indirectly, by adding physics controls to scene-graph spatials:
+
+[source,java]
+----
+float radius = 2f;
+CollisionShape sphere2 = new SphereCollisionShape(radius);
+
+Node ghostNode1 = new Node("ghostNode1");
+GhostControl gc1 = new GhostControl(sphere2);
+ghostNode1.addControl(gc1);
+
+Node rigidNode1 = new Node("rigidNode1");
+float mass = 1f;
+RigidBodyControl rbc1 = new RigidBodyControl(sphere2, mass);
+rigidNode1.addControl(rbc1);
+----
+
+Either way, the objects
+aren't simulated unless they're added to a space.
+
+== Summary
+
+* Before adding Minie to an application, remove all other physics libraries.
+* {url-api}/BulletAppState.html[`BulletAppState`] provides a convenient interface
+  for configuring, accessing, updating, and debugging a physics space.
+* Collision objects can be created 2 ways:
+** directly, using the constructors
+** indirectly, by adding physics controls to the scene graph.
+* Collision objects aren't simulated unless they're added to a space.

@@ -1,0 +1,203 @@
+= An introduction to `DynamicAnimControl`
+:page-pagination:
+:url-tutorial: https://github.com/stephengold/Minie/blob/master/TutorialApps/src/main/java/jme3utilities/tutorial
+
+The centerpiece of Minie is `DynamicAnimControl`, a kind of `PhysicsControl`.
+Adding a `DynamicAnimControl` to an animated model
+provides ragdoll physics and inverse kinematics.
+`DynamicAnimControl` can also be used to simulate ropes.
+
+== Adding the control to a spatial
+
+Configuration of `DynamicAnimControl` mostly takes place
+before the control is added to a model spatial.
+Adding the control to a spatial automatically creates a ragdoll,
+including rigid bodies and physics joints.
+No ragdoll exists before the control is added to a spatial,
+and removing a control from its spatial destroys the ragdoll.
+
+The controlled spatial must include the model's `SkinningControl`
+(or its `SkeletonControl`, if using the old animation system).
+
+[NOTE]
+====
+Often this is the model's root spatial, but not always.
+If unsure about a model's structure, use `MySpatial.listAnimationSpatials()`.
+For a very simple example, see
+{url-tutorial}/HelloDac.java[HelloDac.java].
+====
+
+`DynamicAnimControl` positions itself just before the `SkinningControl`
+(or the `SkeletonControl`) in the spatial's list of scene-graph controls.
+There it can read the armature's joint transforms (skeleton's bone transforms)
+*after* they've been written by canned animations
+and store new values *before* the transforms get applied to any meshes.
+
+[NOTE]
+====
+In Minie documentation,
+the word _skeleton_ refers to both `com.jme3.animation.Skeleton` instances
+and `com.jme3.anim.Armature` instances.
+Similarly, the word _bone_ refers to both `com.jme3.animation.Bone` instances
+and `com.jme3.anim.Joint` instances.
+
+In contexts where "joint" might be ambiguous,
+the phrases _physics joint_ (for `com.jme3.bullet.joints.PhysicsJoint`)
+and _skeleton joint_ (for `com.jme3.anim.Joint`) are used.
+====
+
+== Physics links
+
+A model's ragdoll is composed of rigid bodies joined by physics joints.
+Within `DynamicAnimControl`, each `PhysicsRigidBody` is represented by
+a `PhysicsLink`, and the links are organized in a tree hierarchy.
+
+`PhysicsLink` has 3 subclasses:
+
+* `BoneLink`: manages one or more bones in the model’s skeleton.
+  Each `BoneLink` has a parent link, to which it is jointed.
+  Its parent may be another `BoneLink` or it may be a `TorsoLink`.
+* `TorsoLink`: is always the root of a link hierarchy,
+  so it has no parent link.
+  It manages all root bones in the model's skeleton.  It also manages any
+  skeleton bones that aren't managed by a `BoneLink`.
+* `AttachmentLink`: manages a non-animated model that's
+  attached to the main model by means of an attachment node.
+  An `AttachmentLink` cannot be the parent of a link.
+
+== Configuring a ragdoll
+
+The default constructor for `DynamicAnimControl` is configured to create a
+ragdoll with no bone links, only a `TorsoLink`.
+Before adding the control to a spatial, specify which bones
+should be linked, by invoking the `link()` method for each of those bones.
+The order in which bones are linked doesn't matter.
+
+I recommend starting with a default `LinkConfig` and a generous range of motion
+for each linked bone:
+
+[source,java]
+----
+dynamicAnimControl.link(boneName, new LinkConfig(), new RangeOfMotion(1f, 1f, 1f));
+----
+
+For a simple example, see
+{url-tutorial}/HelloBoneLink.java[HelloBoneLink].
+
+When you run `HelloBoneLink`, press the space bar to put the control into
+dynamic mode.
+You'll see the linked bones go limp while the remainder of the Ninja model
+stays rigid.
+
+As an alternative to hand-coding the control configuration,
+you can generate configuration code for a specific model using
+https://github.com/stephengold/Minie/tree/master/DacWizard[the DacWizard application],
+which samples animation tracks to estimate
+the range of motion for each linked bone.
+
+You probably don't want to link every bone in the model's skeleton.
+For instance, if the model has articulated fingers, you probably want to link
+the hand bones but not the individual finger bones.
+Unlinked bones will be managed by the nearest linked ancestor bone.
+The `TorsoLink` will manage any bones for which no ancestor bone is linked.
+If you link too many bones, the ragdoll may become inflexible or jittery
+due to collisions between rigid bodies that don't share a `PhysicsJoint`.
+
+== Link modes:  dynamic/kinematic
+
+Once a `DynamicAnimControl` is added to a spatial,
+the next step is to add it to a `PhysicsSpace`.
+Then, on the next simulation step,
+the ragdoll automatically becomes _"ready for dynamic mode"_.
+
+Within such a ragdoll, each link can be independently configured
+as _dynamic_ (controlled by physics) or _kinematic_ (unaffected by physics).
+Initially, all links are kinematic.
+
+Kinematic mode has 4 _submodes_.
+The default submode is `Animated`, which applies bone rotations obtained
+from the model's `AnimComposer` or `AnimControl`.
+This is the submode you'd use to play an `AnimClip` on the ragdoll.
+
+The other kinematic submodes are:
+
+* `Frozen`, which freezes bone rotations at their current values,
+* `Bound`, which sets bone rotations
+  based on the bind position of the model's skeleton, and
+* `Amputated` which reduces bone scales to simulate amputated limbs.
+
+Dynamic mode includes options for locking rotational axes
+and applying uniform acceleration (to simulate gravity).
+
+To make an entire ragdoll go limp, use `setRagdollMode()`.
+
+NOTE:  `DynamicAnimControl` doesn't actually have a "ragdoll mode".
+`setRagdollMode()` is a convenience method
+that puts all links into dynamic mode, applies gravity,
+and releases most attachments.
+
+Since each link can be independently configured,
+it's possible for a ragdoll to be part dynamic, part kinematic.
+For instance, you can make an NPC flee in terror (kinematic torso and legs)
+while its injured arm dangles limply (dynamic mode).
+
+To make a subtree of a ragdoll go limp, use `setDynamicSubtree()`.
+You can also configure the links individually using `PhysicsLink.setDynamic()`.
+
+To avoid sudden jumps
+when a link transitions from dynamic mode to kinematic mode,
+there's a configurable blending period.
+
+== Canned animations in dynamic mode
+
+(Documentation not yet written)
+
+== Collisions between links
+
+(Documentation not yet written)
+
+== Inverse kinematics
+
+Given a set of rigid bodies joined by rotational constraints,
+the problem of finding joint angles to satisfy additional constraints
+is referred to as an _inverse-kinematic_ (IK) problem.
+For example, you might want to ensure that:
+
+* a character’s nose stays at a particular location, or
+* a character’s forearm remains horizontal, or
+* a character’s eyes gaze toward a moving vehicle, or
+* the tip of a character's thumb touches their ear, or
+* a character’s feet stay within 5 cm of the ground plane, or
+* a character's center of gravity stays directly above their left foot, or
+* 2 characters hold hands.
+
+In the context of a `DynamicAnimControl` ragdoll, you can solve such problems
+by adding joints and/or controllers to its physics links.
+
+* An _IK joint_ (`IKJoint`) is simply a physics constraint
+  that's been augmented for use with `DynamicAnimControl`.
+* A _IK controller_ (`IKController`) is a software object
+  that calculates forces, impulses, and torques
+  and applies them to a `PhysicsLink`.
+
+NOTE: Both mechanisms work only on dynamic links, not static ones.
+
+For instance, to constrain a character’s nose to be at a particular location,
+you might add a single-ended IK joint to the head's `BoneLink`.
+
+* An IK joint that constrains both location and orientation is called a _fix_.
+* An IK joint that constrains location but not orientation is called a _pin_.
+
+(More documentation to be written)
+
+== Collision detection
+
+(Documentation not yet written)
+
+== Contact response
+
+(Documentation not yet written)
+
+== Simulating chain/rope
+
+(Documentation not yet written)

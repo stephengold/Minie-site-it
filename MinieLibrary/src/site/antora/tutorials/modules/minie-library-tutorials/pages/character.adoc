@@ -1,0 +1,275 @@
+= An introduction to character physics
+:experimental:
+:page-pagination:
+:pi: &#960;
+:url-api: https://stephengold.github.io/Minie/javadoc/master/com/jme3/bullet
+:url-jme3test: https://github.com/stephengold/Minie/blob/master/Jme3Examples/src/main/java/jme3test
+:url-tutorial: https://github.com/stephengold/Minie/blob/master/TutorialApps/src/main/java/jme3utilities/tutorial
+
+A _physics character_ is a collision object
+used to simulate game characters (people) walking, jumping, and falling.
+
+The standard physics character makes some simplifying assumptions:
+
+* The character's shape must be convex.
+* The character remains upright even when jumping or falling:
+  no sitting, squatting, ducking, or lying down.
+* Limits are placed on:
+** how steep a slope the character can climb,
+** how high a step the character can climb, and
+** how fast the character can fall.
+
+Like a dynamic rigid body,
+a physics character has a collision shape, a location, and
+a gravity vector, along with velocities and damping parameters.
+It also has an option for contact response, which is enabled by default.
+
+However, a physics character has no concept of mass,
+and its motion is controlled very differently from a dynamic body.
+Instead of applying forces or directly updating the character's velocities,
+the app should specify when and how the character should walk and jump.
+
+== Direct creation
+
+You can create a character by directly invoking the
+{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`] constructor.
+This allows you to specify its collision shape and step height.
+
+{url-tutorial}/HelloCharacter.java[HelloCharacter] is a simple application
+that demonstrates the direct creation of a character,
+followed by automated jumps.
+Things to notice about the app:
+
+. The constructor requires a convex shape.
+  In this app, a capsule is used.
+. By themselves, the character and the ground are both invisible,
+  so the app uses debug visualization
+  to reveal what is occurring in physics space.
+. The `onGround()` method tests whether the character is supported
+  by a solid surface (as opposed to jumping or falling).
+
+Since directly created characters don't look like much,
+even in debug visualization,
+they are mostly used to represent players in single-player games
+with a first-person viewpoint.
+
+== CharacterControl
+
+To associate a character with a spatial, there's a
+{url-api}/control/CharacterControl.html[`CharacterControl`] class
+that implements the {url-api}/control/PhysicsControl.html[`PhysicsControl`]
+interface.
+
+NOTE: For a {url-api}/control/CharacterControl.html[`CharacterControl`],
+the physics control and its collision object are *not* the same object!
+In fact, no collision object is created until the control is added to a spatial.
+
+To access the collision object associated with a control,
+use `characterControl.getCharacter()`.
+To access the control associated with a collision object, use:
+
+[source,java]
+----
+(CharacterControl) character.getUserObject();
+----
+
+{url-tutorial}/HelloCharacterControl.java[HelloCharacterControl]
+is a simple application that demonstrates
+the creation of a {url-api}/control/CharacterControl.html[`CharacterControl`].
+
+Things to notice about the app:
+
+. The character's collision shape is a capsule.
+. The center of the Jaime model is located between its feet.
+  If the control were directly attached to the model,
+  its capsule shape would be off-center.
+  In order to match the model to the physics, the control is attached instead
+  to a `centerNode` located near Jaime's chest.
+. Because control provides convenience methods
+  such as `onGround()` and `jump()`,
+  the app never accesses the collision object directly.
+
+== Walking
+
+A character's walking motion is controlled by its _walk direction_ vector.
+During each simulation step, the horizontal component of the walk direction
+gets added to the character's location.
+To stop the character from walking, invoke `setWalkDirection(Vector3f.ZERO)`.
+
+NOTE: Despite its name, the walk direction need not be a unit vector.
+
+{url-tutorial}/HelloWalk.java[HelloWalk] demonstrates
+keyboard-controlled motion of a physics character.
+Things to notice while running the app:
+
+. Move the mouse to turn the camera.
+. Because the app uses a first-person viewpoint, the character is invisible.
+  Nonetheless, the character's *shadow* can be seen. Find it!
+. Press kbd:[Space bar] to jump.
+. Press kbd:[W] to walk in the camera's forward direction.
+. Some of the mountains have slopes too steep for the character to climb.
+
+For an example using a third-person viewpoint,
+see {url-tutorial}/HelloWalkOtoCc.java[HelloWalkOtoCc].
+
+. Press kbd:[Space bar] to jump.
+. Press kbd:[U] to walk in the camera's forward direction.
+. Press kbd:[H] to walk to the camera's left.
+. Press kbd:[J] to walk in the direction opposite
+  from the camera's forward direction.
+. Press kbd:[K] to walk to the camera's right.
+
+== Configuration
+
+The configuration parameters described in this section
+apply to both `PhysicsCharacter` and `CharacterControl`.
+The control provides convenience methods to get/set some of these parameters.
+The rest may be accessed by way of `characterControl.getCharacter()`.
+
+=== Gravity and up direction
+
+The _up direction_ of a physics character is a unit vector
+that points in the direction opposite its gravity vector.
+By default, the up direction is (0,1,0) and
+the gravity vector is (0,-29.4,0).
+
+NOTE: A character's default gravity is 3x stronger
+than the default gravity of a {url-api}/PhysicsSpace.html[`PhysicsSpace`].
+
+NOTE: Unlike the gravity of a rigid body, a character's gravity is never
+overridden by any physics space.
+
+To alter a character's gravity vector,
+use `character.setGravity(Vector3f)`.
+
+Altering the gravity vector automatically updates the character's up direction.
+To alter the *magnitude* of a character's gravity
+(without changing its direction) use `character.setGravity(float)`.
+
+To alter a character's up direction, use `character.setUp(Vector3f)`.
+Altering the up direction automatically updates the gravity vector.
+
+=== Jump speed
+
+If a character jumps in its up direction,
+its predicted rise time and jump height
+are determined by its gravity and jump speed.
+Roughly speaking:
+
+[source,java]
+----
+float g = character.getGravity(null).length();
+float v0 = character.getJumpSpeed();
+float riseSeconds = v0 / g;
+float jumpHeight = v0 * v0 / (2f * g);
+----
+
+The default jump speed is 10 psu per second.
+To alter a character's jump speed, use `character.setJumpSpeed(float)`.
+
+=== Fall speed
+
+_Fall speed_ limits the speed of a falling character.
+To be realistic, it should be larger than the character's jump speed.
+
+The default fall speed is 55 psu per second.
+To alter a character's fall speed, use `character.setFallSpeed(float)`.
+
+=== Step height
+
+_Step height_ limits how high a step the character can climb.
+To be realistic, it should be less than the character's height.
+
+A character's initial step height is set by the constructor.
+To alter it, use `character.setStepHeight(float)`.
+
+=== Maximum slope
+
+_Maximum slope_ limits how steep a slope the character can climb.
+It is expressed as an angle in radians relative to the horizontal plane.
+
+The default maximum slope is {pi}/4, indicating a 45-degree angle.
+To alter it, use `character.setMaxSlope(float)`.
+
+=== Contact response
+
+As with a rigid body, you can disable the contact response of a character using
+`character.setContactResponse(false)`.
+
+Disabling a character's contact response
+will compel it to fall, at least until contact response is re-enabled.
+
+== BetterCharacterControl
+
+Many limitations of
+{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`] and
+{url-api}/control/CharacterControl.html[`CharacterControl`]
+are hardcoded into Bullet.
+To work around these limitations,
+you may wish to implement your own physics controls for characters.
+
+{url-api}/control/BetterCharacterControl.html[`BetterCharacterControl`] (BCC)
+is a custom character control that implements ducking and look direction.
+You can use it as a model for implementing your own physics controls.
+
+NOTE: BCC is based
+on {url-api}/objects/PhysicsRigidBody.html[`PhysicsRigidBody`],
+not {url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`].
+
+There are many differences between BCC and CharacterControl.
+For example:
+
+. The collision objects are located differently.
+  BCC locates the collision object near the character's feet,
+  whereas CharacterControl centers it where a person's hips would be.
+. The APIs to instantly relocate the character are different.
+  BCC provides a `warp()` method,
+  whereas CharacterControl allows you to invoke `setPhysicsLocation()` directly.
+. The `setWalkDirection()` methods have different semantics.
+  In BCC, the argument is a velocity vector (psu per second),
+  whereas in CharacterControl the argument is a displacement (psu per time step).
+. The APIs to test whether the character has physical support are different.
+  BCC has `isOnGround()`,
+  whereas CharacterControl calls it `onGround()`.
+. A CharacterControl will pass right through
+  another CharacterControl without colliding,
+  whereas a BCC can detect collisions with other characters.
+. A BCC has mass and can be configured for kinematic motion,
+  whereas a CharcterControl has no mass and cannot be made kinematic.
+. BCC is more customizable than CharacterControl.
+
+{url-tutorial}/HelloWalkOtoBcc.java[HelloWalkOtoBcc] is a simple application
+that demonstrates walking and jumping with BCC and a third-person viewpoint.
+The user interface is identical to HelloWalkOtoCc:
+
+. Press kbd:[Space bar] to jump.
+. Press kbd:[U] to walk in the camera's forward direction.
+. Press kbd:[H], kbd:[J], or kbd:[K] to walk in other directions.
+
+== Related demo apps
+
+The Jme3Examples subproject contains several demo apps
+that showcase physics characters.
+
+* {url-jme3test}/bullet/TestQ3.java[The `TestQ3` demo app] demonstrates
+  a first-person walkthrough of a fictitious ancient temple.
+  It uses a directly created `PhysicsCharacter`.
+* The {url-jme3test}/bullet/TestPhysicsCharacter.java[`TestPhysicsCharacter`]
+  and {url-jme3test}/bullet/TestWalkingChar.java[`TestWalkingChar`]
+  demo apps use `CharacterControl` and a third-person viewpoint.
+** TestWalkingCharacter demonstrates the Oto model walking and shooting,
+   with appropriate skeleton animations.
+** TestPhysicsCharacter demonstrates the Sinbad model walking and jumping,
+   but doesn't use skeleton animations.
+* {url-jme3test}/bullet/TestBetterCharacter.java[The `TestBetterCharacter` demo app]
+  demonstrates the Jaime model walking, jumping, and ducking.
+  It uses BCC and a third-person viewpoint.
+
+== Summary
+
+* A physics character simulates a game character walking, jumping, and falling.
+* To associate a character with a spatial, use a `CharacterControl`.
+* For `CharacterControl`, the physics control
+  and its collision object are *not* the same object!
+* If the built-in character controls don't meet your needs,
+  you can implement your own.

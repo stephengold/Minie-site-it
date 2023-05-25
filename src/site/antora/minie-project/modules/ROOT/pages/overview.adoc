@@ -1,0 +1,100 @@
+= Minie project overview
+:Project: Minie
+:url-enwiki: https://en.wikipedia.org/wiki
+
+_{Project}_ is a 3-D {url-enwiki}/Physics_engine[physics simulation] library
+for https://jmonkeyengine.org[JMonkeyEngine]
+that takes physics-based games to the next level.
+
+Use it to:
+
+* add solidity to walls, characters, projectiles, landscapes, and vehicles,
+* detect collisions between complex shapes,
+* perform contact, ray, and sweep tests,
+* simulate characters and buildings collapsing in real time, and
+* simulate cloth, rope, and deformable volumes,
+  including their interactions with rigid bodies and each other.
+
+Forked from https://github.com/jMonkeyEngine-Contributions/Jme3Bullet[the jme3-bullet library]
+in 2018, Minie adds many useful features
+while preserving most of the jme3-bullet
+{url-enwiki}/Application_programming_interface[API].
+Most JMonkeyEngine physics examples can use Minie without modification,
+plus Minie provides its own tutorials and example apps to help you get started.
+
+All software in the {Project} project is free and open-source,
+including the library itself, the demo, tutorial, and utility apps,
+and the software used to build, test, and run them.
+
+The underlying simulation software comes from
+https://pybullet.org/wordpress[_Bullet_], a mature real-time physics simulator.
+But although Bullet is written in {url-enwiki}/C%2B%2B[C&#43;&#43;],
+you won't need any knowledge of C&#43;&#43; to use {Project}.
+
+
+== Caveats
+
+{Project}'s focus is on simulating
+{url-enwiki}/Classical_mechanics[classical mechanics]
+in just enough detail to add verisimilitude to 3-D games.
+It's not intended for 2-D {url-enwiki}/Platform_game[platformers],
+nor for scientific research.
+For 2-D physics, consider using http://www.dyn4j.org/[dyn4j] instead.
+
+In order to use the latest {Project} release,
+you'll need version 3.6 JMonkeyEngine libraries.
+For more information about the libraries Minie depends on,
+see xref:depends.adoc[the Library version dependencies page].
+
+Like JMonkeyEngine, {Project} and its documentation
+assume a certain level of proficiency with
+{url-enwiki}/Java_(programming_language)[the Java programming language].
+This project isn't aimed at non-programmers,
+nor developers without prior Java experience.
+Similarly, some familiarity with 3-D graphics and vector math is assumed.
+
+While an understanding of classical mechanics is assumed,
+many of its technical terms are linked (at first use)
+to the relevant article in the English Wikipedia.
+
+https://raw.githubusercontent.com/stephengold/Minie/master/LICENSE[The project's BSD-style license]
+disclaims liability for defects.
+Please don't use this software in safety-critical applications.
+
+
+== Getting help
+
+For self-help, make use of
+xref:minie-library-tutorials:add.adoc[the tutorial pages],
+https://stephengold.github.io/Minie/javadoc/master[the javadoc], and
+https://github.com/stephengold/Minie[the source code].
+
+The JMonkeyEngine Forum/Hub is a good place to ask technical questions.
+The most relevant categories are:
+
+* https://hub.jmonkeyengine.org/c/user-code-projects/minie/63[User Code & Projects : Minie] and
+* https://hub.jmonkeyengine.org/c/troubleshooting/physics/17[Troubleshooting : Physics].
+
+For issues that are best handled privately, contact me by e-mail.
+My personal e-mail address appears
+on https://stephengold.github.io/[my homepage] and in the source code.
+
+
+== The name
+
+The project is named after
+{url-enwiki}/Claude-%C3%89tienne_Mini%C3%A9[_Claude-Étienne Minié_],
+who in 1846 developed an improved bullet for rifles.
+It's a play on words, not intended to denigrate the man, nor glorify him.
+
+The preferred English pronunciation is roughly "min-YAY",
+but "MIN-ee" is also acceptable.
+
+
+== Next steps
+
+If you're curious how {Project} works,
+proceed to xref:implementation.adoc[the Implementation page].
+
+To gain hands-on experience,
+proceed to xref:minie-library-tutorials:add.adoc[the first tutorial page].

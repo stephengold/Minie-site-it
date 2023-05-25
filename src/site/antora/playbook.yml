@@ -1,0 +1,22 @@
+---
+# configure Antora for a local test using the published UI bundle
+
+site:
+  title: The Minie project in Italian (local test using the published bundle)
+  start_page: minie-it:ROOT:overview.adoc
+  url: /home/sgold/NetBeansProjects/Minie-site-it/build/site
+content:
+  sources:
+    - url: /home/sgold/NetBeansProjects/Minie-site-it
+      branches: master
+      start_path: src/site/antora/minie-project
+    - url: /home/sgold/NetBeansProjects/Minie-site-it
+      branches: master
+      start_path: MinieLibrary/src/site/antora/tutorials
+ui:
+  bundle:
+    url: https://github.com/stephengold/antora-ui-bundle/releases/download/v-sgold230101a/ui-bundle.zip
+    snapshot: true
+output:
+  clean: true
+  dir: build/site

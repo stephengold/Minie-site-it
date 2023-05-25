@@ -1,0 +1,6 @@
+---
+# component/version descriptor for the "MinieLibrary/src/site/antora/tutorials" source directory
+
+name: minie-it
+title: The Minie project in Italian
+version: it

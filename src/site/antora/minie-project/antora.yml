@@ -1,0 +1,9 @@
+---
+# component/version descriptor for the "src/site/antora/minie-project" source directory
+
+name: minie-it
+title: The Minie project in Italian
+version: it
+start_page: ROOT:overview.adoc
+nav:
+  - modules/ROOT/nav.adoc
