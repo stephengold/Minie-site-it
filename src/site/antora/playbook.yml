@@ -4,13 +4,13 @@
 site:
   title: The Minie project in Italian (local test using the published bundle)
   start_page: minie-it:ROOT:overview.adoc
-  url: /home/sgold/NetBeansProjects/Minie-site-it/build/site
+  url: /home/gattolfo/Documenti/github/Minie-site-it/build/site
 content:
   sources:
-    - url: /home/sgold/NetBeansProjects/Minie-site-it
+    - url: /home/gattolfo/Documenti/github/Minie-site-it
       branches: master
       start_path: src/site/antora/minie-project
-    - url: /home/sgold/NetBeansProjects/Minie-site-it
+    - url: /home/gattolfo/Documenti/github/Minie-site-it
       branches: master
       start_path: MinieLibrary/src/site/antora/tutorials
 ui:
