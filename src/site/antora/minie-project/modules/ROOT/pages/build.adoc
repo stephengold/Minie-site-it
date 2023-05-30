@@ -220,7 +220,7 @@ see https://github.com/stephengold/Libbulletjme[the Libbulletjme project].
 . Download and extract the source code from GitHub:
 .. `git clone https://github.com/stephengold/Minie-site-it.git`
 .. `cd Minie-site-it`
-. Edit "src/site/antora/playbook.yml" and replace "/home/sgold/NetBeansProjects/Minie-site-it"
+. Edit "src/site/antora/playbook.yml" and replace "/home/gattolfo/Documenti/github/Minie-site-it"
   with an absolute path to your checkout directory (3 places).
 . https://docs.antora.org/antora/latest/install-and-run-quickstart/#install-nodejs[Install Node.js]
 . Run Antora:
