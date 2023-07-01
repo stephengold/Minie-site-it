@@ -1,4 +1,4 @@
-= How Minie works
+= Come Minie funziona
 :Cplusplus: C&#43;&#43;
 :Project: Minie
 :url-enwiki: https://en.wikipedia.org/wiki
