@@ -3,160 +3,162 @@
 :Project: Minie
 :url-enwiki: https://en.wikipedia.org/wiki
 
-For physics simulation and collision detection,
-{Project} uses https://pybullet.org/wordpress[the _Bullet Physics SDK_],
-a mature, open-source, 3-D physics simulator,
-released under https://github.com/bulletphysics/bullet3/blob/master/LICENSE.txt[a Zlib license].
+Per la simulazione fisica e per il rilevamente delle collisioni,
+{Project} usa https://pybullet.org/wordpress[the _Bullet Physics SDK_],
+un maturo, open-source, simulatore fisico 3-D,
+rilasciato sotto https://github.com/bulletphysics/bullet3/blob/master/LICENSE.txt[Zlib license].
 
-To enable efficient simulation of moving meshes,
-{Project} also incorporates Khaled Mamou's
-https://github.com/kmammou/v-hacd[Volumetric-Hierarchical Approximate Convex Decomposition _(V-HACD)_ algorithm].
+Per consentire una simulazione efficente delle mesh in movimento,
+{Project} incorpora anche
+https://github.com/kmammou/v-hacd[L'algoritmo di decomposizione convessa approssimata volumetrica-gerarchica _(V-HACD)_] di Khaled Mamou.
 
-== Native libraries
+== Librerie native
 
-Bullet and V-HACD are written in {Cplusplus}, so {Project} uses
-https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/intro.html[the Java Native Interface (JNI)]
-to access their objects and methods.
+Bullet e V-HACD sono scritte in {Cplusplus}, quindi {Project} utilizza
+https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/intro.html[Java Native Interface (JNI)]
+per accedere ai loro metodi e oggetti.
 
-All {Cplusplus} source code associated with {Project}
-(including a modified partial snapshot of Bullet, a snapshot of V-HACD, and some "glue code")
-resides in https://github.com/stephengold/Libbulletjme[the Libbulletjme repository].
-Before instantiating physics objects,
-a {Project} application must {url-enwiki}/Dynamic_loading[dynamically load]
-a _native library_ of this code,
-compiled for the {url-enwiki}/Computing_platform[platform]
-on which the app is executing.
+Tutto il codice sorgente {Cplusplus} utilizzato nel {Project}
+(incluso uno snapshot modificato di Bullet, uno snapshot di V-HACD, e qualche "codice colla")
+si trovano nella https://github.com/stephengold/Libbulletjme[ repository Libbulletjme].
+Prima di inizializzare oggetti fisici,
+una applicazione {Project} deve {url-enwiki}/Dynamic_loading[caricare dinamicamente]
+una _libreria nativa_ di questo codice,
+compilata per {url-enwiki}/Computing_platform[la piattaforma]
+su cui l'app è in esecuzione.
 
-The Libbulletjme project publishes native libraries
-for the 13 platforms {Project} supports:
+Il progetto Libbulletjme pubblica librerie native
+per le 13 piattaforme supportate da {Project}:
 
 * Windows (32-bit and 64-bit),
 * Linux (x86-64, x86, armhf, and aarch64),
 * macOS (x86-64, IA-32, and ARM64), and
 * Android (armeabi-v7a, arm64-v8a, x86, and x86_64).
 
-NOTE: 32-bit and 64-bit versions of the same operating system
-count as distinct platforms!
+NOTA: le versioni 32-bit e 64-bit dello stesso sistema operativo
+contano come piattaforme distinte!
 
-On desktop platforms, JMonkeyEngine automatically loads
-the appropriate native library
-during initialization of the `JmeDesktopSystem` class
-if it detects Minie's `NativeMeshUtil` class.
-On Android platforms, the native library is loaded (if present)
-during static initialization of the `JmeAndroidSystem` class.
+Sulle piattaforme desktop, JMonkeyEngine carica automaticamente
+le appropriate librerie native
+durante l'inizializzazione della classe `JmeDesktopSystem`
+se rileva la classe Minie `NativeMeshUtil`.
+Su Android, la libreria nativa è caricata (se presente) 
+durante l'inizializzazione statica della classe `JmeAndroidSystem`.
 
-== Collision objects, spaces, and shapes
+== Collisioni con oggetti, spazi, e forme
 
-Collision detection is organized around _collision objects_
-that interact in the context of a _collision space_.
-Collision objects can be _soft_ (varying shape) or _rigid_ (non-varying shape).
-Rigid objects can be _mobile_ (moving) or _static_ (non-moving).
-And mobile objects can be _dynamic_ (driven by {url-enwiki}/Force[forces],
-{url-enwiki}/Torque[torques], and {url-enwiki}/Impulse_(physics)[impulses])
-or _kinematic_ (driven directly by external calculations).
+Il rilevamento di collisioni è organizzata intorno a _oggetti di collisione_ 
+che interagiscono nel contesto di uno _spazione di collisione_.
+Gli oggetti di collisione possono essere _morbidi_ (forma variabile) oppure _rigidi_ (forma non variabile).
+Gli oggetti rigidi possono essere _movibili_ (in movimento) o _statici_ (non in movimento).
+In oltre gli oggetti movibili possono essere _dinamici_ (controllati da {url-enwiki}/Force[forze],
+{url-enwiki}/Torque[rotazioni] e {url-enwiki}/Impulse_(physics)[impulsi])
+oppure _cinematici_ (controllati direttamente da un calcolatore esterno).
 
-In {Project}, collision spaces that simulate forces, torques, and impulses
-are referred to as _physics spaces_.
+In {Project}, gli spazi di collisione che simulano forze, rotazioni e impulsi 
+sono indicati come _physics spaces_.
 
-By themselves, collision objects are invisible,
-while scene-graph spatials have no effect on physics.
-To visualize a collision object, it must be associated
-with one or more scene-graph spatial(s).
-For debugging purposes, Minie can visualize
-collision objects by auto-generating spatials for them.
-For full-custom visualization, a _physics control_
-should be used to associate collision objects with spatials.
+Di per sé, gli oggetti di collisione sono invisibili,
+mentre gli spatial scene-graph non hanno effetto sulla fisica.
+Per visualizzare un oggetto di collisione deve essere associato
+con uno o più spatial scene-graph.
+Per scopi di debugging, {project} può visualizzare 
+gli oggetti di collisione autogenerando degli spatial.
+Per una visualizzazione completamente custom, un _physics control_
+dovrebbe essere usato per associare oggetti di collisione a spatial.
 
-Each rigid collision object references a _collision shape_
-that describes the shape of its surface.
-Most collision shapes are _scalable_,
-allowing you to grow or shrink objects
-simply by varying the shape's scale factors.
+Ogni oggetto di collisione rigido si collega a _collision shape_
+che descrive la forma della sua superfice.
+Molte collision shapes sono _scalabili_,
+permettendo di ingrandire o rimpicciolire oggetti
+semplicemente variando i fattori di scala della forma.
 
-== Coordinate systems and units
+== Sistema di coordinate e unità
 
-A collision object's absolute location and orientation are quantified
-in _physics-space coordinates_,
-based on a right-handed Cartesian coordinate system.
-These typically correspond to world coordinates of the scene.
-However, Minie supports scaling the physics space relative to the scene,
-in which case the _physics-space units_ (psu)
-might differ the from world units (wu).
+La location assoluta e l'orientazione di un oggetto di collisione sono quantificate
+in _cordinate dello spazio fisico_,
+basato su un sistema di coordinate cartesiane destrorse.
+Queste solitamente corrispondono alle cordinate della scena(world cordinate).
+Tuttavia, {project} supporta il ridimensionamento dello spazio fisico relativo alla scena,
+in questo caso le _cordinate dello spazio fisico_ (psu)
+potrebbero differire dalle unità del mondo (wu).
 
-With notable exceptions,
-{Project} doesn't specify real-world units for distance.
-Instead, its documentation refers to physics-space units,
-which could be light-years or millimeters, depending on the application.
-Nor does {Project} specify which axis serves as the "up" direction.
-If you use a Y-up coordinate system with a psu of one meter,
-then {Project}'s default gravity
-will be roughly correct for the Earth's surface.
-However, there are good reasons to use physics-space units other than meters.
 
-Locations relative to a collision object's center and subject to its rotation
-are quantified using _local coordinates_.
-The documentation distinguishes _scaled local coordinates_ (measured in psu)
-from _shape coordinates_ (which depend on scale factors).
+Con notevoli eccezioni,
+{Project} non utilizza dimensioni reali per le distanze.
+La ducumentazione utilizza unità dello spazio fisico (physics-space units),
+che potrebbero essere anni luce o millimetri, in base all'applicazione.
 
-== Discrete time and collision detection
+{Project} non specifica nemmeno quale asse rappresenta la direzione "su",
+Se utilizzi un sistema di cordinate Y-up con psu di un metro,
+allora la gravità di default di {Minie} 
+sarà approssimativamente simile alla gravità della superfice terrestre.
+Tuttavia, ci sono buone ragioni per utilizzare unità dello spazio fisico diverse dei metri.
 
-Within a physics space, simulation occurs in discrete steps.
-While it's possible to vary the time step from step to step,
-a fixed time step tends to yield more reproducible results.
+Le posizioni relative al centro degli oggetti di collisione e soggette alle sue rotazioni 
+sono quantificate usando _coordinate locali_.
+La documentazione distingue _cordinate locali scalate_ (misurate in psu)
+dalle _coordinate di forma_ (che dipendono dai fattori di scala)
 
-Each time step consists of 4 _phases_:
+== Tempo discreto e rilevamento delle collisioni
+
+Al'interno di uno spazio fisico, la simulazione avviene in passi discreti.
+Mentre è possibile variare il tempo da step a step,
+uno step temporale fisso tende a produrre risultati più riproducibili.
+
+Ogni step consiste in 4 _fasi_:
 
 . _forward dynamics part one_,
-  to apply known forces and torques
-  and predict the next position of each collision object,
+  per applicare forze e momenti noti 
+  e prevedere la posizione successiva di ogni oggetto di collisione,
 . _broadphase collision detection_,
-  to quickly determine (using axis-aligned bounding boxes)
-  which object pairs might possibly collide,
+  per determinare rapidamente (usando riquadri di delimitazione allineati con gli assi)
+  quali coppie di oggi potrebbero entrare in collisione,
 . _narrowphase collision detection_,
-  to compute actual contacts (if any) between between objects, and
+  per calcolare gli effettivi contatti (se presenti), e 
 . _forward dynamics part 2_,
-  to apply contact forces, solve constraints, and update positions.
+  per applicare forze dicontatto, risolvere vincoli, e aggiornare posizioni.
 
+Le collisioni sono inviate ai listerner registrati allo spazio.
+Per oggetti con movimenti veloci, 
+{Project} offre il rilevamento continuo opzionale delle collisioni (CCD)
+usando una swept spheres.
 Collisions are reported to listeners registered at the space.
-For fast-moving objects,
-{Project} offers optional continuous collision detection (CCD)
-using swept spheres.
-Collisions detected by CCD are reported to those same listeners.
+Le collisioni rilevate da CCD sono inviate ai stessi listener.
 
 == App states
 
-To simplify the creation and management of physics spaces,
-Minie provides _app states_.
-The simplest of these is `BulletAppState`; it manages a single
-space without any soft objects or multibodies.
-Simulation of the space can take place on the render thread
-or else on a dedicated _physics thread_.
-Either way, the app state attempts to synchronize to real time
-during each rendered frame.
+Per semplificare la creazione e la gestione dello spazio fisico.
+{Project} fornisce gli _app states_
+Il più semplice è `BulletAppState`; si occupa di gestire un singolo 
+spazio senza nessun oggetto morbito o multioggetti.
+La simulazione dello spazio può essere posizionata nel thread di render
+oppure un un _thread fisico_ dedicato.
+In entrambi i casi l'app state cerca di sincronizzarsi in tempo reale 
+durante ogni fotogramma realizzato. 
 
-Debug visualization can be enabled or disabled simply by setting a parameter.
+La visualizzazione del debug può essere attivata o non, semplicemente impostando un parametro.
 
-== Direct buffers, garbage collection, and threading
+== buffer diretti, garbage collection, and threading
 
-Direct buffers used in {Project} should have native byte order.
+I buffer diretti usati in {Project} devono avere un byte order nativo.
 
-All other native objects created by {Project} are carefully tracked using
-weak references.
+Tutti gli altri oggetti nativi creati da {Project} sono attentamente tracciati 
+usando riferimenti deboli.
 
-Successful initialization of a native library causes {Project}
-to start a daemon thread named "Physics Cleaner".
-Its purpose is to free any tracked native objects
-whose corresponding java objects have been garbage collected.
+la riuscita inizializzazione di una libreria nativa causa in {Project}
+l'avvio di un demone chiamato "Physics Cleaner".
+Il suo compito è quello di liberare tutti gli oggetti nativi monitorati 
+che corrispondono a oggetti java che sono stati liberati dal garbage collector. 
 
-As a performance enhancement,
-{Project} can parallelize certain for-loops on platforms that support OpenMP.
-To enable this feature, a multi-threaded native library must be loaded.
+Come miglioramento delle prestazioni,
+{Project} può parallelizzare determinati cicli dor sulle piattaforme che supportano OpenMP.
+Per abilitare questa feature, è necessario caricare una libreria nativa multithread.
 
+== Prossimi passi
 
-== Next steps
+Per più dettagli sulla fisica Bullet puoi scaricare il
+https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf[manuale utente di Bullet].
 
-For more detail about Bullet physics, download and read the
-https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf[Bullet User Manual].
-
-To gain hands-on experience,
-proceed to xref:minie-library-tutorials:add.adoc[the first tutorial page].
+Per acquisire esperienza pratica, 
+puoi procedere alla xref:minie-library-tutorials:add.adoc[prima pagina del tutorial].
