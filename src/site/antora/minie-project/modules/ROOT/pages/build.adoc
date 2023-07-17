@@ -1,133 +1,132 @@
-= How to build Minie from source
+= Come costruire Minie da sorgente
 :Project: Minie
 
-{Project} is free, open-source software.
+{Project} è un software gratuito e open-source.
 
-While pre-built artifacts
-can be downloaded from GitHub and the Maven Central Repository,
-some people prefer to build them from source.
+Gli artifatti pre-costruiti possono essere scaricati da GitHub e dalla Repository Centrale di Maven,
+tuttavia alcune persone preferiscono costruirli direttamente da sorgente.
 
-You can also build a local copy of the documentation (website content).
-This is useful if you are editing the content,
-or if your Internet access is limited or unreliable.
+Puoi anche costruire una copia della documentazione (il contenuto del sito).
+Questo può essere utile se vuoi modificarne il contenuto o se
+il tuo accesso a Internet è limitato o non accessibile.
 
 
-== Library artifacts
+== Artifatti di libreria
 
-=== Standard build
+=== Build standard
 
-The _standard build_ of the Minie library includes a non-debug,
-single-precision native library for each of the 13 platforms Minie supports.
+La _costruzione standard_ della libreria {Project} include una libreria nativa non di debug, a precisione singola 
+per ciascuna delle 13 piattaforme supportate da {Project}.
 
-Here's the recommended procedure:
+Ecco la procedura consigliata:
 
-. Install a https://adoptium.net/releases.html[Java Development Kit (JDK)],
-  if you don't already have one.
-. Point the `JAVA_HOME` environment variable to your JDK installation:
-  (The path might be something like "C:\Program Files\Java\jre1.8.0_301"
-  or "/usr/lib/jvm/java-8-openjdk-amd64/" or
+. Installa una https://adoptium.net/releases.html[Java Development Kit (JDK)],
+  se non ne hai già una.
+. Punta la variabile d'ambiente `JAVA_HOME` alla tua installazione JDK:
+  (Il percorso potrebbe essere qualcosa di simile "C:\Program Files\Java\jre1.8.0_301"
+  or "/usr/lib/jvm/java-8-openjdk-amd64/" o
   "/Library/Java/JavaVirtualMachines/liberica-jdk-17-full.jdk/Contents/Home" .)
-.. using Bash or Zsh: `export JAVA_HOME="` *path to installation* `"`
-.. using Windows Command Prompt: `set JAVA_HOME="` *path to installation* `"`
-.. using PowerShell: `$env:JAVA_HOME = '` *path to installation* `'`
-. Download and extract the {Project} source code from GitHub:
-.. using Git:
+.. usando una Bash o Zsh: `export JAVA_HOME="` *path dove installare* `"`
+.. usando Windows Command Prompt: `set JAVA_HOME="` *path dove intallare* `"`
+.. usuando PowerShell: `$env:JAVA_HOME = '` *path dove installare* `'`
+. Scarica ed estrai il codice sorgente di {Project} da GitHub:
+.. usando Git:
 ... `git clone https://github.com/stephengold/Minie.git`
 ... `cd Minie`
 ... `git checkout -b latest 7.6.0`
-.. using a web browser:
-... browse to https://github.com/stephengold/Minie/releases/latest
-... follow the "Source code (zip)" link
-... save the ZIP file
-... extract the contents of the saved ZIP file
-... `cd` to the extracted directory
-. Run the Gradle wrapper to build the entire project:
-.. using Bash or PowerShell or Zsh: `./gradlew build`
-.. using Windows Command Prompt: `.\gradlew build`
+.. usando un browser web:
+... naviga su https://github.com/stephengold/Minie/releases/latest
+... scarica il "Codice sorgente (zip)"
+... salva il file zip
+... estrai il contenuto dellop zip
+... entra nella directory estratta
+. Esegui il wrapper Gradle per costruire l'intero progetto:
+.. usando una Bash o una PowerShell o Zsh: `./gradlew build`
+.. unando Windows Command Prompt: `.\gradlew build`
 
-After a successful build,
-artifacts will be found in the "MinieLibrary/build/libs" directory.
+Dopo una build riuscita,
+gli artifatti sarranno disponibili nella directory "MinieLibrary/build/libs".
 
-=== Quicker builds
+=== Builds veloci
 
-In addition to the library, the Minie project includes subprojects for
-assets and applications that take time to build.
-To save time, you can build just the library subproject:
+Oltre alla libreria, il progetto Minie include sottoprogetti per
+risorse e applicazioni che richiedono tempo per essere create.
+Per risparmiare tempo, puoi creare solo il sottoprogetto della libreria che ti interessa:
 
-* using Bash or PowerShell or Zsh: `./gradlew :MinieLibrary:build`
-* using Windows Command Prompt: `.\gradlew :MinieLibrary:build`
+* usando Bash or PowerShell o Zsh: `./gradlew :MinieLibrary:build`
+* usando Windows Command Prompt: `.\gradlew :MinieLibrary:build`
 
-To save even more time, you can skip the automated tests:
+Per risparmiare ancora più tempo, puoi saltare i test automatici:
 
-* using Bash or PowerShell or Zsh: `./gradlew :MinieLibrary:assemble`
-* using Windows Command Prompt: `.\gradlew :MinieLibrary:assemble`
+* usando Bash o PowerShell o Zsh: `./gradlew :MinieLibrary:assemble`
+* usando Windows Command Prompt: `.\gradlew :MinieLibrary:assemble`
 
-=== Install artifacts
+=== Installa artefatti
 
-You can install the built artifacts to your local Maven repository:
+Puoi installare gli artefatti della build nella tua repository Maven locale:
 
-* using Bash or PowerShell or Zsh: `./gradlew install`
-* using Windows Command Prompt: `.\gradlew install`
+* usando Bash o PowerShell o Zsh: `./gradlew install`
+* usando Windows Command Prompt: `.\gradlew install`
 
 === Cleanup
 
-After a build, you can restore the project to a pristine state:
+Dopo una compilazione, puoi ripristinare il progetto a uno stato incontaminato:
 
-* using Bash or PowerShell or Zsh: `./gradlew clean`
-* using Windows Command Prompt: `.\gradlew clean`
+* usando Bash o PowerShell o Zsh: `./gradlew clean`
+* usando Windows Command Prompt: `.\gradlew clean`
 
-== Customizing native libraries
+== Personalizzazione delle librerie native
 
-The standard build is very convenient.
-However, it's sub-optimal for many situations.
+La build standard è molto conveniente.
+Tuttavia, non è ottimale per molte situazioni.
 
 === Debug builds
 
-During application development, debug-enabled native libraries should be used.
-Most Minie releases provide a "+debug" build of the library for this purpose.
-You can replicate it by adding the "-Pbtdebug" option to the build command:
+Durante lo sviluppo dell'applicazione, dovrebbero essere utilizzate librerie native abilitate per il debug.
+La maggior parte delle versioni di Minie fornisce una build "+debug" della libreria per questo scopo.
+Puoi replicarlo aggiungendo l'opzione "-Pbtdebug" al comando build:
 
-* using Bash or PowerShell or Zsh: `./gradlew -Pbtdebug clean build`
-* using Windows Command Prompt: `.\gradlew -Pbtdebug clean build`
+* usando Bash o PowerShell o Zsh: `./gradlew -Pbtdebug clean build`
+* usando Windows Command Prompt: `.\gradlew -Pbtdebug clean build`
 
-NOTE: Don't confuse the "-Pbtdebug" option with "-Pdebug",
-which had special significance to certain old versions of Gradle.
+NOTA: non confondere l'opzione "-Pbtdebug" con "-Pdebug",
+che ha un significato speciale per certe vecchie versioni di Gradle.
 
-=== Double-precision builds
+=== Build a doppia precisione
 
-Some applications may benefit from double-precision native libraries.
-Most Minie releases provide "+dp" and "+debugdp" builds of the library,
-which you can replicate by adding the "-Pdp" option to the build command.
+Alcune applicazioni possono trarre vantaggio dalle librerie native a doppia precisione.
+La maggior parte delle versioni di Minie fornisce build "+dp" e "+debugdp" della libreria,
+che puoi replicare aggiungendo l'opzione "-Pdp" al comando build.
 
-=== Multithreaded builds
+=== Build multithread
 
-Some applications may benefit from multithreaded native libraries.
-Some Minie releases provide "+mt" builds of the library,
-which you can replicate by specifying the "-Pmt" option in the build command.
+Alcune applicazioni possono trarre vantaggio dalle librerie native multithread.
+Alcune versioni di Minie forniscono build "+mt" della libreria,
+che puoi replicare specificando l'opzione "-Pmt" nel comando build.
 
-=== Reduced builds
+=== Builds ridotte
 
-Supporting 13 platforms requires 13 native libraries,
-which results in a big, fat JAR and (potentially) a bloated application.
-To address bloat, some Minie releases provide reduced builds that
-don't support all 13 platforms.
-These include:
+Il supporto di 13 piattaforme richiede 13 librerie native,
+che si traduce in un JAR grande e grasso e (potenzialmente) un'applicazione gonfia.
+Per risolvere il problema, alcune versioni di Minie forniscono build ridotte che
+non supportano tutte le 13 piattaforme.
+Questi includono:
 
-* A "+big3" build (created using the "-Pbig3" option)
-  with support for just the 3 main platforms (Linux64, MacOSX64, and Windows64).
-* A "+bare" build (created using the "-Pbare" option)
-  which doesn't include *any* native libraries.
-* A "+droid" build (created using the "-Pdroid" option)
-  with support for just the 4 Android platforms.
+* A "+big3" build (creabile usando l'opzione "-Pbig3")
+  fornisce il supporto solo per le 3 piattaforme principali (Linux64, MacOSX64, and Windows64)
+* A "+bare" build (creabile usando l'opzione "-Pbare")
+  che non include *tutte* le librerie native.
+* A "+droid" build (creabile usando l'opzione "-Pdroid")
+  con supporto solo per le 4 piattaforme Android.
 
-=== Further customization
+=== Ulteriore personalizzazione
 
-You can customize Minie to include precisely the native libraries you need.
+Puoi personalizzare Minie per includere esattamente le librerie native di cui hai bisogno.
 
-To configure which native libraries will be included in the JAR,
-edit the "MinieLibrary/build.gradle" script.
-Look for the section where the `btf` variables are set.
-It should look something like this:
+Per configurare quali librerie native saranno incluse nel JAR,
+puoi modificare lo script "MinieLibrary/build.gradle".
+Cerca la sezione in cui sono impostate le variabili `btf`.
+Dovrebbe assomigliare a qualcosa di simile a questo:
 
 [source,groovy]
 ----
@@ -146,8 +145,8 @@ btfWindows32 = 'ReleaseSp'
 btfWindows64 = 'ReleaseSp'
 ----
 
-For example, to include only the 64-bit Linux native library,
-change the other `btf` variables to `''` and rebuild:
+Ad esempio, per includere solo la libreria nativa di Linux a 64 bit,
+cambia le altre variabili `btf` in `''` e ricostruisci:
 
 [source,groovy]
 ----
@@ -166,8 +165,8 @@ btfWindows32 = ''
 btfWindows64 = ''
 ----
 
-Similarly, you could customize Minie
-with the debug-enabled native library for a specific platform:
+Allo stesso modo, puoi personalizzare Minie
+con la libreria nativa abilitata al debug per una piattaforma specifica:
 
 [source,groovy]
 ----
@@ -186,8 +185,8 @@ btfWindows32 = ''
 btfWindows64 = 'DebugSp'
 ----
 
-Similarly, you can specify double-precision (Dp-flavored) native libraries
-for specific platforms:
+Allo stesso modo, puoi specificare librerie native a doppia precisione (con Dp).
+per piattaforme specifiche:
 
 [source,groovy]
 ----
@@ -206,25 +205,25 @@ btfWindows32 = ''
 btfWindows64 = 'ReleaseDp'
 ----
 
-[NOTE]
+[NOTA]
 ====
-Native libraries aren't published for every possible combination of options.
-For instance, if you want Dp native libraries for Android platforms,
-you'll probably have to build them yourself.
-For more information,
-see https://github.com/stephengold/Libbulletjme[the Libbulletjme project].
+Le librerie native non vengono pubblicate per ogni possibile combinazione di opzioni.
+Ad esempio, se desideri librerie native Dp per piattaforme Android,
+probabilmente dovrai costruirle tu stesso.
+Per maggiori informazioni,
+vedi https://github.com/stephengold/Libbulletjme[il progetto Libbulletjme].
 ====
 
-== Website content
+== Contenuto del sito web
 
-. Download and extract the source code from GitHub:
+. Scarica ed estrai il codice sorgente da GitHub:
 .. `git clone https://github.com/stephengold/Minie-site-it.git`
 .. `cd Minie-site-it`
-. Edit "src/site/antora/playbook.yml" and replace "/home/gattolfo/Documenti/github/Minie-site-it"
-  with an absolute path to your checkout directory (3 places).
-. https://docs.antora.org/antora/latest/install-and-run-quickstart/#install-nodejs[Install Node.js]
-. Run Antora:
+. Modifica "src/site/antora/playbook.yml" e sostituisci "/home/gattolfo/Documenti/github/Minie-site-it"
+  con un percorso assoluto alla directory di checkout (3 posizioni).
+. https://docs.antora.org/antora/latest/install-and-run-quickstart/#install-nodejs[Installa Node.js]
+. Esegui Antora:
 .. `npx antora src/site/antora/playbook.yml`
 
-After a successful build,
-the local copy of the site will be found in the "build/site" directory.
+Dopo una costruzione riuscita,
+la copia locale del sito si troverà nella directory "build/site".

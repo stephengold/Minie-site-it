@@ -108,7 +108,7 @@ uno step temporale fisso tende a produrre risultati più riproducibili.
 
 Ogni step consiste in 4 _fasi_:
 
-. _forward dynamics part one_,
+. _forward dynamics parte uno_,
   per applicare forze e momenti noti 
   e prevedere la posizione successiva di ogni oggetto di collisione,
 . _broadphase collision detection_,
@@ -116,7 +116,7 @@ Ogni step consiste in 4 _fasi_:
   quali coppie di oggi potrebbero entrare in collisione,
 . _narrowphase collision detection_,
   per calcolare gli effettivi contatti (se presenti), e 
-. _forward dynamics part 2_,
+. _forward dynamics parte due_,
   per applicare forze dicontatto, risolvere vincoli, e aggiornare posizioni.
 
 Le collisioni sono inviate ai listerner registrati allo spazio.

@@ -1,93 +1,93 @@
-= An overview of the demo applications
+= Una panoramica delle applicazioni demo
 :Project: Minie
 :experimental:
 :url-examples: https://github.com/stephengold/Minie/tree/master/MinieExamples/src/main/java/jme3utilities/minie/test
 
-_Demo applications_ are provided to showcase certain features of {Project}.
-The following demos are found in
-{url-examples}[the "jme3utilities.minie.test" package of the MinieExamples sub-project]:
+_Le applicazioni demo_ sono fornite per mostrare alcune caratteristiche di {Project}.
+Le seguenti demo possono essere trovate qui:
+{url-examples}[il "jme3utilities.minie.test" package del MinieExamples sub-project]:
 
 * {url-examples}/BalanceDemo.java[`BalanceDemo`]
-  demonstrates ragdolls that balance their weight between 2 feet
+  mostra ragdoll che bilanciano il loro peso tra 2 piedi
 * {url-examples}/BuoyDemo.java[`BuoyDemo`]
-  demonstrates ragdolls with buoyancy
+  mostra ragdoll con galleggiabilità
 * {url-examples}/ConveyorDemo.java[`ConveyorDemo`]
-  demonstrates contact-point modifications
-* {url-examples}/DropTest.java[`DropTest`] (also known as `MultiSphereDemo`)
-  demonstrates falling rigid bodies with various shapes
+  dimostra le modifiche del punto di contatto
+* {url-examples}/DropTest.java[`DropTest`] (conosciuto anche come `MultiSphereDemo`)
+  mostra la caduta di corpi rigidi di varie forme
 * {url-examples}/ForceDemo.java[`ForceDemo`]
-  demonstrates forces, torques, and impulses applied in zero gravity
+  mostra forze, coppie e impulsi applicati in assenza di gravità
 * {url-examples}/JointDemo.java[`JointDemo`]
-  demonstrates a crawling robot composed of boxes and 6-DOF joints
+  mostra un robot strisciante composto da scatole e giunti a 6 gradi di libertà
 * {url-examples}/NewtonsCradle.java[`NewtonsCradle`]
-  demonstrates dynamic restitution and point-to-point joints
+  dimostra restituzione dinamica e giunzioni punto-punto
 * {url-examples}/Pachinko.java[`Pachinko`]
-  demonstrates compound collision shapes and 2-D physics
+  mostra le forme di collisione composte e la fisica 2-D
 * {url-examples}/PoolDemo.java[`PoolDemo`]
-  demonstrates 3 kinds of dynamic friction
+  dimostra 3 tipi di attrito dinamico
 * {url-examples}/RopeDemo.java[`RopeDemo`]
-  demonstrates simulation of ropes using `DynamicAnimControl`
-* {url-examples}/SeJointDemo.java[`SeJointDemo`]
-  demonstrates various kinds of single-ended physics joints
+  dimostra la simulazione delle corde usando  `DynamicAnimControl`
+* {url-examples}/SeJointDemo.java[`SeJointDemo`] 
+  dimostra vari tipi di giunti fisici single-ended
 * {url-examples}/SplitDemo.java[`SplitDemo`]
-  demonstrates dynamic splitting of rigid bodies
+  dimostra la scissione dinamica di corpi rigidi
 * {url-examples}/SweepDemo.java[`SweepDemo`]
-  demonstrates the use of `sweepTest()` to detect of sword hits
+  dimostra l'uso di `sweepTest()` per rilevare i colpi di spada
 * {url-examples}/TargetDemo.java[`TargetDemo`]
-  demonstrates shooting balls at various targets
+  mostra uno sparo di una palla su vari bersagli 
 * {url-examples}/TestDac.java[`TestDac`]
-  demonstrates `DynamicAnimControl` applied to various models
+  mostra `DynamicAnimControl` applicato a vari modelli
 * {url-examples}/TestGearJoint.java[`TestGearJoint`]
-  demonstrates a gear joint
+  mostra un giunto di marcia
 * {url-examples}/TestSoftBody.java[`TestSoftBody`]
-  demonstrates soft-body physics without `SoftBodyControl`
+  dimostra la fisica del corpo molle senza `SoftBodyControl`
 * {url-examples}/TestSoftBodyControl.java[`TestSoftBodyControl`]
-  demonstrates soft-body physics using `SoftBodyControl`
+  dimostra la fisica del corpo molle con un `SoftBodyControl`
 * {url-examples}/TrackDemo.java[`TrackDemo`]
-  demonstrates inverse kinematics using `IKController`
+  mostra la cinematica inversa usando `IKController`
 * {url-examples}/WatchDemo.java[`WatchDemo`]
-  demonstrates head/eye inverse kinematics for various models
+  mostra la cinematica inversa testa/occhio per vari modelli
 * {url-examples}/Windlass.java[`Windlass`]
-  demonstrates rope simulation using rigid bodies
+  mostra la simulazione della fune utilizzando corpi rigidi
 
-(Not all applications in the package are intended as demos;
-those not listed above are primarily for testing purposes.)
+(Non tutte le applicazioni nel pacchetto sono intese come demo;
+quelle non elencati sopra sono principalmente a scopo di test.)
 
-For some of the demos, video walkthrus are available from YouTube.
+Per alcune delle demo, i video walkthrus sono disponibili su YouTube.
 
 
-== User interface
+== Interfaccia utente
 
-The demos are controlled primarily by keyboard input.
-Each includes a _help node_
-that displays a brief description of each key's function.
+Le demo sono controllate principalmente dall'input da tastiera.
+Ognuno include un _help node_
+che visualizza una breve descrizione della funzione di ciascun tasto.
 
-NOTE: The descriptions below assume a keyboard with the "US" (QWERTY) layout.
-On keyboards with other layouts, the keys may be labeled differently:
-refer to the help nodes for localized key labels.
+NOTA: le descrizioni seguenti presuppongono una tastiera con layout "US" (QWERTY).
+Sulle tastiere con altri layout, i tasti possono essere etichettati in modo diverso:
+fare riferimento ai nodi della guida per le etichette delle chiavi localizzate.
 
-For convenience, the mapping of keys to actions is partly standardized.
-In most demos:
+Per comodità, la mappatura delle chiavi alle azioni è in parte standardizzata.
+Nella maggior parte delle demo:
 
-* kbd:[H] toggles the help node between minimized and full-sized versions,
-* kbd:[F5] toggles visibility of the render-statistics overlay,
-* kbd:[O] dumps the physics space to the console,
-* kbd:[C] dumps the camera's position to the console, and
-* kbd:[Esc] ends the application.
+* kbd:[H] alterna il nodo di aiuto tra le versioni ridotte a icona e a grandezza naturale,
+* kbd:[F5] attiva/disattiva la visibilità della sovrapposizione delle statistiche di rendering,
+* kbd:[O] dumps spazio fisico sulla console,
+* kbd:[C] dumps posizione della telecamera sulla console e
+* kbd:[Esc] termina l'applicazione.
 
-For camera control, all demos use
-the standard `FlyByCamera` with `setDragToRotate(true)`.
-This means you can rotate the camera
-by dragging with the left mouse button (LMB).
-Furthermore:
+Per il controllo della fotocamera, tutte le demo usano
+lo standard `FlyByCamera` con `setDragToRotate(true)`.
+Ciò significa che puoi ruotare la fotocamera
+trascinando con il tasto sinistro del mouse (LMB).
+Inoltre:
 
-* kbd:[W] and kbd:[S] dolly the camera forward and back, respectively,
-* kbd:[A] and kbd:[D] dolly the camera left and right, respectively,
-* kbd:[Q] and kbd:[&uarr;] raise the camera, and
-* kbd:[Z] and kbd:[&darr;] lower the camera.
+* kbd:[W] e kbd:[S] muovono la fotocamera avanti e indietro, rispettivamente,
+* kbd:[A] e kbd:[D] muovono la fotocamera a sinistra ea destra, rispettivamente,
+* kbd:[Q] e kbd:[&uarr;] alzare la fotocamera, e
+* kbd:[Z] e kbd:[&darr;] abbassano la fotocamera.
 
-Some of the demos (such as `DropTest` and `TargetDemo`)
-rely entirely on debug visualization to render the physics objects.
-Others (such as `TestDac` and `PoolDemo`) use physics controls.
-When physics controls are in use,
-kbd:[/] toggles debug visualization on and off.
+Alcune demo (come `DropTest` e `TargetDemo`)
+si affidano interamente alla visualizzazione di debug per il rendering degli oggetti fisici.
+Altri (come `TestDac` e `PoolDemo`) usano controlli fisici.
+Quando sono in uso i controlli fisici,
+kbd:[/] attiva e disattiva la visualizzazione del debug.

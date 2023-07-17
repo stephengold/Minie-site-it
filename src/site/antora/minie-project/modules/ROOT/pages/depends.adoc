@@ -1,27 +1,28 @@
-= Library version dependencies
+= Dipendenze della versione della libreria
 
-Each release of the Minie library targets specific versions
-of the Java libraries it depends on, such as "jme3-core" and "Heart".
-The targeted versions are usually
-the most-recent production/stable versions at the time of release.
-Since libraries strive to maintain backward compatibility,
-versions other than the targeted ones will often work just fine.
-However, it's slightly safer
-to stick to library combinations that were built (and tested) together.
+Ogni versione della libreria Minie si rivolge a versioni specifiche
+delle librerie Java da cui dipende, come "jme3-core" e "Heart".
+Le versioni mirate sono di solito
+le versioni di produzione/stabili più recenti al momento del rilascio.
+Poiché le librerie si sforzano di mantenere la compatibilità con le versioni precedenti,
+le versioni diverse da quelle mirate spesso funzioneranno bene.
+Tuttavia, è leggermente più sicuro
+attenersi alle combinazioni di librerie che sono state costruite (e testate) insieme.
 
-In case you want to use Minie
-without upgrading one or more of the libraries it depends on,
-the table below may help you decide which release to use.
+Nel caso in cui desideri utilizzare Minie
+senza aggiornare una o più librerie da cui dipende,
+la tabella seguente può aiutarti a decidere quale versione utilizzare.
 
-Each release of Minie targets a specific version
-of native libraries from the Libbulletjme project.
-Usually all the necessary natives are bundled into Minie's class JAR,
-but sometimes you need augment Minie's native libraries  ---
-for instance, when using a "+bare" build of Minie.
+Ogni versione di Minie si rivolge a una versione specifica
+di librerie native dal progetto Libbulletjme.
+Di solito tutti i nativi necessari sono raggruppati nel JAR di Minie,
+ma a volte hai bisogno di aggiornare le librerie native di Minie ---
+ad esempio, quando si utilizza una build "+bare" di Minie.
 
-In case you need to augment Minie's native libraries,
-the following table indicates
-the Libbulletjme release that corresponds to each Minie release.
+Nel caso tu abbia bisogno di aggiornare le librerie native di Minie,
+la tabella seguente indica
+la versione di Libbulletjme che corrisponde a ciascuna versione di Minie.
+
 
 [cols="1,5,3,1",grid="none"]
 |===
@@ -189,11 +190,11 @@ the Libbulletjme release that corresponds to each Minie release.
 
 |===
 
-Additional details about each Minie release
-(such as bugfixes, features, and release dates) can be found in the
-https://github.com/stephengold/Minie/blob/master/MinieLibrary/release-notes.md[release log].
+Ulteriori dettagli su ogni versione di Minie
+(come correzioni di bug, funzionalità e date di rilascio) sono disponibili nel file
+https://github.com/stephengold/Minie/blob/master/MinieLibrary/release-notes.md[registro di rilascio].
 
-NOTE: All Minie releases in the table above
-are available from the Maven Central Repository.
-However, the release log also describes many releases
-that haven't been published to Maven Central.
+NOTA: tutte le versioni di Minie nella tabella sopra
+sono disponibili nel Maven Central Repository.
+Tuttavia, il registro delle versioni descrive anche molte versioni
+che non sono stati pubblicati su Maven Central.
