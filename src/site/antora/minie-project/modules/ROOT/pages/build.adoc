@@ -8,7 +8,7 @@ tuttavia alcune persone preferiscono costruirli direttamente da sorgente.
 
 Puoi anche costruire una copia della documentazione (il contenuto del sito).
 Questo può essere utile se vuoi modificarne il contenuto o se
-il tuo accesso a Internet è limitato o non accessibile.
+il tuo accesso a Internet è limitato o poco stabile.
 
 
 == Artifatti di libreria
@@ -24,11 +24,11 @@ Ecco la procedura consigliata:
   se non ne hai già una.
 . Punta la variabile d'ambiente `JAVA_HOME` alla tua installazione JDK:
   (Il percorso potrebbe essere qualcosa di simile "C:\Program Files\Java\jre1.8.0_301"
-  or "/usr/lib/jvm/java-8-openjdk-amd64/" o
+  o "/usr/lib/jvm/java-8-openjdk-amd64/" o
   "/Library/Java/JavaVirtualMachines/liberica-jdk-17-full.jdk/Contents/Home" .)
 .. usando una Bash o Zsh: `export JAVA_HOME="` *path dove installare* `"`
-.. usando Windows Command Prompt: `set JAVA_HOME="` *path dove intallare* `"`
-.. usuando PowerShell: `$env:JAVA_HOME = '` *path dove installare* `'`
+.. usando Windows Command Prompt: `set JAVA_HOME="` *path dove installare* `"`
+.. usando PowerShell: `$env:JAVA_HOME = '` *path dove installare* `'`
 . Scarica ed estrai il codice sorgente di {Project} da GitHub:
 .. usando Git:
 ... `git clone https://github.com/stephengold/Minie.git`
@@ -38,25 +38,25 @@ Ecco la procedura consigliata:
 ... naviga su https://github.com/stephengold/Minie/releases/latest
 ... scarica il "Codice sorgente (zip)"
 ... salva il file zip
-... estrai il contenuto dellop zip
+... estrai il contenuto dello zip
 ... entra nella directory estratta
 . Esegui il wrapper Gradle per costruire l'intero progetto:
 .. usando una Bash o una PowerShell o Zsh: `./gradlew build`
-.. unando Windows Command Prompt: `.\gradlew build`
+.. usando Windows Command Prompt: `.\gradlew build`
 
-Dopo una build riuscita,
+Se la costruzione (build) sarà andata a buon fine,
 gli artifatti sarranno disponibili nella directory "MinieLibrary/build/libs".
 
 === Builds veloci
 
 Oltre alla libreria, il progetto Minie include sottoprogetti per
-risorse e applicazioni che richiedono tempo per essere create.
-Per risparmiare tempo, puoi creare solo il sottoprogetto della libreria che ti interessa:
+risorse e applicazioni che richiedono tempo per essere creati.
+Per risparmiare tempo, puoi scegliere di creare solo il sottoprogetto della libreria che ti interessa:
 
-* usando Bash or PowerShell o Zsh: `./gradlew :MinieLibrary:build`
+* usando Bash o PowerShell o Zsh: `./gradlew :MinieLibrary:build`
 * usando Windows Command Prompt: `.\gradlew :MinieLibrary:build`
 
-Per risparmiare ancora più tempo, puoi saltare i test automatici:
+Per velocizzare ulteriormente il processo, salta i test automatici:
 
 * usando Bash o PowerShell o Zsh: `./gradlew :MinieLibrary:assemble`
 * usando Windows Command Prompt: `.\gradlew :MinieLibrary:assemble`
@@ -70,15 +70,15 @@ Puoi installare gli artefatti della build nella tua repository Maven locale:
 
 === Cleanup
 
-Dopo una compilazione, puoi ripristinare il progetto a uno stato incontaminato:
+Una volta terminata la costruzione (build), puoi riportare il progetto allo stato originario:
 
 * usando Bash o PowerShell o Zsh: `./gradlew clean`
 * usando Windows Command Prompt: `.\gradlew clean`
 
 == Personalizzazione delle librerie native
 
-La build standard è molto conveniente.
-Tuttavia, non è ottimale per molte situazioni.
+Utilizzare la build standard è molto conveniente.
+Tuttavia, non è la scelta ottimale in molte situazioni.
 
 === Debug builds
 
@@ -90,7 +90,7 @@ Puoi replicarlo aggiungendo l'opzione "-Pbtdebug" al comando build:
 * usando Windows Command Prompt: `.\gradlew -Pbtdebug clean build`
 
 NOTA: non confondere l'opzione "-Pbtdebug" con "-Pdebug",
-che ha un significato speciale per certe vecchie versioni di Gradle.
+che ha particolare rilevanza per certe vecchie versioni di Gradle.
 
 === Build a doppia precisione
 
@@ -107,7 +107,7 @@ che puoi replicare specificando l'opzione "-Pmt" nel comando build.
 === Builds ridotte
 
 Il supporto di 13 piattaforme richiede 13 librerie native,
-che si traduce in un JAR grande e grasso e (potenzialmente) un'applicazione gonfia.
+che si traduce in un JAR piuttosto ingombrante e (potenzialmente) un'applicazione gonfia.
 Per risolvere il problema, alcune versioni di Minie forniscono build ridotte che
 non supportano tutte le 13 piattaforme.
 Questi includono:
