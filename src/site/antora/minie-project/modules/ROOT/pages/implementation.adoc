@@ -1,11 +1,11 @@
-= Come Minie funziona
+= Come funziona Minie
 :Cplusplus: C&#43;&#43;
 :Project: Minie
 :url-enwiki: https://en.wikipedia.org/wiki
 
-Per la simulazione fisica e per il rilevamente delle collisioni,
+Per la simulazione fisica e per il rilevamento delle collisioni,
 {Project} usa https://pybullet.org/wordpress[the _Bullet Physics SDK_],
-un maturo, open-source, simulatore fisico 3-D,
+un simulatore fisico 3-D open-source e affidabile,
 rilasciato sotto https://github.com/bulletphysics/bullet3/blob/master/LICENSE.txt[Zlib license].
 
 Per consentire una simulazione efficente delle mesh in movimento,
@@ -32,22 +32,22 @@ per le 13 piattaforme supportate da {Project}:
 
 * Windows (32-bit and 64-bit),
 * Linux (x86-64, x86, armhf, and aarch64),
-* macOS (x86-64, IA-32, and ARM64), and
+* macOS (x86-64, IA-32, and ARM64), e
 * Android (armeabi-v7a, arm64-v8a, x86, and x86_64).
 
 NOTA: le versioni 32-bit e 64-bit dello stesso sistema operativo
 contano come piattaforme distinte!
 
 Sulle piattaforme desktop, JMonkeyEngine carica automaticamente
-le appropriate librerie native
+le librerie native corrette
 durante l'inizializzazione della classe `JmeDesktopSystem`
 se rileva la classe Minie `NativeMeshUtil`.
 Su Android, la libreria nativa è caricata (se presente) 
 durante l'inizializzazione statica della classe `JmeAndroidSystem`.
 
-== Collisioni con oggetti, spazi, e forme
+== Collisioni con oggetti, spazi e forme
 
-Il rilevamento di collisioni è organizzata intorno a _oggetti di collisione_ 
+Il rilevamento di collisioni è organizzato intorno a _oggetti di collisione_ 
 che interagiscono nel contesto di uno _spazione di collisione_.
 Gli oggetti di collisione possono essere _morbidi_ (forma variabile) oppure _rigidi_ (forma non variabile).
 Gli oggetti rigidi possono essere _movibili_ (in movimento) o _statici_ (non in movimento).
@@ -60,12 +60,12 @@ sono indicati come _physics spaces_.
 
 Di per sé, gli oggetti di collisione sono invisibili,
 mentre gli spatial scene-graph non hanno effetto sulla fisica.
-Per visualizzare un oggetto di collisione deve essere associato
+Per visualizzare un oggetto di collisione, questo deve essere associato
 con uno o più spatial scene-graph.
 Per scopi di debugging, {project} può visualizzare 
 gli oggetti di collisione autogenerando degli spatial.
-Per una visualizzazione completamente custom, un _physics control_
-dovrebbe essere usato per associare oggetti di collisione a spatial.
+Per una visualizzazione completamente personalizzata, utilizzare un _physics control_
+per associare oggetti di collisione a spatial.
 
 Ogni oggetto di collisione rigido si collega a _collision shape_
 che descrive la forma della sua superfice.
@@ -76,11 +76,11 @@ semplicemente variando i fattori di scala della forma.
 == Sistema di coordinate e unità
 
 La location assoluta e l'orientazione di un oggetto di collisione sono quantificate
-in _cordinate dello spazio fisico_,
-basato su un sistema di coordinate cartesiane destrorse.
-Queste solitamente corrispondono alle cordinate della scena(world cordinate).
+in _coordinate dello spazio fisico_,
+basate su un sistema di coordinate cartesiane destrorse.
+Queste solitamente corrispondono alle coordinate della scena (world cordinate).
 Tuttavia, {project} supporta il ridimensionamento dello spazio fisico relativo alla scena,
-in questo caso le _cordinate dello spazio fisico_ (psu)
+in questo caso le _coordinate dello spazio fisico_ (psu)
 potrebbero differire dalle unità del mondo (wu).
 
 
@@ -93,20 +93,20 @@ che potrebbero essere anni luce o millimetri, in base all'applicazione.
 Se utilizzi un sistema di cordinate Y-up con psu di un metro,
 allora la gravità di default di {Minie} 
 sarà approssimativamente simile alla gravità della superfice terrestre.
-Tuttavia, ci sono buone ragioni per utilizzare unità dello spazio fisico diverse dei metri.
+Tuttavia, ci sono buone ragioni per utilizzare unità dello spazio fisico diverse dai metri.
 
 Le posizioni relative al centro degli oggetti di collisione e soggette alle sue rotazioni 
 sono quantificate usando _coordinate locali_.
-La documentazione distingue _cordinate locali scalate_ (misurate in psu)
+La documentazione distingue _coordinate locali scalate_ (misurate in psu)
 dalle _coordinate di forma_ (che dipendono dai fattori di scala)
 
 == Tempo discreto e rilevamento delle collisioni
 
-Al'interno di uno spazio fisico, la simulazione avviene in passi discreti.
+All'interno di uno spazio fisico, la simulazione avviene in passi discreti.
 Mentre è possibile variare il tempo da step a step,
 uno step temporale fisso tende a produrre risultati più riproducibili.
 
-Ogni step consiste in 4 _fasi_:
+Ogni step consiste di 4 _fasi_:
 
 . _forward dynamics parte uno_,
   per applicare forze e momenti noti 
@@ -117,27 +117,26 @@ Ogni step consiste in 4 _fasi_:
 . _narrowphase collision detection_,
   per calcolare gli effettivi contatti (se presenti), e 
 . _forward dynamics parte due_,
-  per applicare forze dicontatto, risolvere vincoli, e aggiornare posizioni.
+  per applicare forze di contatto, risolvere vincoli, e aggiornare posizioni.
 
 Le collisioni sono inviate ai listerner registrati allo spazio.
 Per oggetti con movimenti veloci, 
 {Project} offre il rilevamento continuo opzionale delle collisioni (CCD)
-usando una swept spheres.
-Collisions are reported to listeners registered at the space.
-Le collisioni rilevate da CCD sono inviate ai stessi listener.
+usando delle swept spheres.
+Le collisioni rilevate da CCD sono inviate agli stessi listener.
 
 == App states
 
-Per semplificare la creazione e la gestione dello spazio fisico.
+Per semplificare la creazione e la gestione dello spazio fisico
 {Project} fornisce gli _app states_
-Il più semplice è `BulletAppState`; si occupa di gestire un singolo 
+Il più semplice è `BulletAppState`; che si occupa di gestire un singolo 
 spazio senza nessun oggetto morbito o multioggetti.
 La simulazione dello spazio può essere posizionata nel thread di render
-oppure un un _thread fisico_ dedicato.
+oppure in un _thread fisico_ dedicato.
 In entrambi i casi l'app state cerca di sincronizzarsi in tempo reale 
 durante ogni fotogramma realizzato. 
 
-La visualizzazione del debug può essere attivata o non, semplicemente impostando un parametro.
+La visualizzazione del debug può essere attivata o disattivata, semplicemente impostando un parametro.
 
 == buffer diretti, garbage collection, and threading
 
@@ -146,7 +145,7 @@ I buffer diretti usati in {Project} devono avere un byte order nativo.
 Tutti gli altri oggetti nativi creati da {Project} sono attentamente tracciati 
 usando riferimenti deboli.
 
-la riuscita inizializzazione di una libreria nativa causa in {Project}
+La riuscita inizializzazione di una libreria nativa causa in {Project}
 l'avvio di un demone chiamato "Physics Cleaner".
 Il suo compito è quello di liberare tutti gli oggetti nativi monitorati 
 che corrispondono a oggetti java che sono stati liberati dal garbage collector. 
