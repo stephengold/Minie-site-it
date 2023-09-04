@@ -4,24 +4,24 @@ Ogni versione della libreria Minie si rivolge a versioni specifiche
 delle librerie Java da cui dipende, come "jme3-core" e "Heart".
 Le versioni mirate sono di solito
 le versioni di produzione/stabili più recenti al momento del rilascio.
-Poiché le librerie si sforzano di mantenere la compatibilità con le versioni precedenti,
-le versioni diverse da quelle mirate spesso funzioneranno bene.
+Poiché le librerie puntano a mantenere la compatibilità con le versioni precedenti,
+le versioni diverse da quelle mirate spesso mantengono una buona funzionalità.
 Tuttavia, è leggermente più sicuro
 attenersi alle combinazioni di librerie che sono state costruite (e testate) insieme.
 
-Nel caso in cui desideri utilizzare Minie
+Nel caso in cui si desideri utilizzare Minie
 senza aggiornare una o più librerie da cui dipende,
 la tabella seguente può aiutarti a decidere quale versione utilizzare.
 
 Ogni versione di Minie si rivolge a una versione specifica
 di librerie native dal progetto Libbulletjme.
 Di solito tutti i nativi necessari sono raggruppati nel JAR di Minie,
-ma a volte hai bisogno di aggiornare le librerie native di Minie ---
+ma a volte sarà necessario aggiornare le librerie native di Minie ---
 ad esempio, quando si utilizza una build "+bare" di Minie.
 
-Nel caso tu abbia bisogno di aggiornare le librerie native di Minie,
+Nel caso in cui tu abbia bisogno di aggiornare le librerie native di Minie,
 la tabella seguente indica
-la versione di Libbulletjme che corrisponde a ciascuna versione di Minie.
+la versione di Libbulletjme corrispondente a ciascuna versione di Minie.
 
 
 [cols="1,5,3,1",grid="none"]
@@ -202,4 +202,4 @@ https://github.com/stephengold/Minie/blob/master/MinieLibrary/release-notes.md[r
 NOTA: tutte le versioni di Minie nella tabella sopra
 sono disponibili nel Maven Central Repository.
 Tuttavia, il registro delle versioni descrive anche molte versioni
-che non sono stati pubblicati su Maven Central.
+che non sono stati pubblicate su Maven Central.

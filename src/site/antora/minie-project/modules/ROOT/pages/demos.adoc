@@ -51,7 +51,7 @@ Le seguenti demo possono essere trovate qui:
   mostra la simulazione della fune utilizzando corpi rigidi
 
 (Non tutte le applicazioni nel pacchetto sono intese come demo;
-quelle non elencati sopra sono principalmente a scopo di test.)
+quelle non elencate sopra sono principalmente a scopo di test.)
 
 Per alcune delle demo, i video walkthrus sono disponibili su YouTube.
 
@@ -62,7 +62,7 @@ Le demo sono controllate principalmente dall'input da tastiera.
 Ognuno include un _help node_
 che visualizza una breve descrizione della funzione di ciascun tasto.
 
-NOTA: le descrizioni seguenti presuppongono una tastiera con layout "US" (QWERTY).
+NOTA: le seguenti descrizioni presuppongono una tastiera con layout "US" (QWERTY).
 Sulle tastiere con altri layout, i tasti possono essere etichettati in modo diverso:
 fare riferimento ai nodi della guida per le etichette delle chiavi localizzate.
 
