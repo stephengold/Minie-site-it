@@ -6,67 +6,55 @@
 :url-jme3test: https://github.com/stephengold/Minie/blob/master/Jme3Examples/src/main/java/jme3test
 :url-tutorial: https://github.com/stephengold/Minie/blob/master/TutorialApps/src/main/java/jme3utilities/tutorial
 
-A _physics character_ is a collision object
-used to simulate game characters (people) walking, jumping, and falling.
+Un _personaggio fisico_ è un oggetto di collisione 
+utilizzato per simulare il movimento di personaggi di gioco (persone) mentre camminano, saltano e cadono.
 
-The standard physics character makes some simplifying assumptions:
+Il personaggio fisico standard si basa su alcune semplificazioni concettuali:
 
-* The character's shape must be convex.
-* The character remains upright even when jumping or falling:
-  no sitting, squatting, ducking, or lying down.
-* Limits are placed on:
-** how steep a slope the character can climb,
-** how high a step the character can climb, and
-** how fast the character can fall.
+* La forma del personaggio deve essere convessa.
+* Il personaggio rimane in posizione eretta anche durante il salto o la caduta:
+  nessuna seduta, accovacciamento, chinarsi o sdraiarsi.
+* Vengono imposti dei limiti su:
+** quanto ripido può essere una pendenza che il personaggio può scalare,
+** quanto alta può essere uno scalino che il personaggio può superare, e
+** quanto velocemente il personaggio può cadere.
 
-Like a dynamic rigid body,
-a physics character has a collision shape, a location, and
-a gravity vector, along with velocities and damping parameters.
-It also has an option for contact response, which is enabled by default.
+Come un corpo rigido dinamico, 
+un personaggio fisico ha una forma di collisione, una posizione e un vettore gravitazionale,
+insieme a velocità e parametri di smorzamento. Dispone anche di un'opzione per la risposta ai contatti,
+che è abilitata per impostazione predefinita.
 
-However, a physics character has no concept of mass,
-and its motion is controlled very differently from a dynamic body.
-Instead of applying forces or directly updating the character's velocities,
-the app should specify when and how the character should walk and jump.
+Tuttavia, un personaggio fisico non ha un concetto di massa, e il suo movimento è controllato in modo molto diverso rispetto a un corpo dinamico. Invece di applicare forze o aggiornare direttamente le velocità del personaggio, l'applicazione dovrebbe specificare quando e come il personaggio dovrebbe camminare e saltare.
 
-== Direct creation
+== Creazione diretta
 
-You can create a character by directly invoking the
-{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`] constructor.
-This allows you to specify its collision shape and step height.
+Puoi creare un personaggio invocando direttamente il costruttore
+{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`].
+Ciò ti consente di specificare la sua forma di collisione e l'altezza del gradino.
 
-{url-tutorial}/HelloCharacter.java[HelloCharacter] is a simple application
-that demonstrates the direct creation of a character,
-followed by automated jumps.
-Things to notice about the app:
+{url-tutorial}/HelloCharacter.java[HelloCharacter] È un'applicazione semplice che dimostra la creazione diretta di un personaggio, seguita da salti automatizzati.
+Cose da notare riguardo all'applicazione:
 
-. The constructor requires a convex shape.
-  In this app, a capsule is used.
-. By themselves, the character and the ground are both invisible,
-  so the app uses debug visualization
-  to reveal what is occurring in physics space.
-. The `onGround()` method tests whether the character is supported
-  by a solid surface (as opposed to jumping or falling).
+. Il costruttore richiede una forma convessa. 
+  In questa applicazione, viene utilizzata una capsula.
+. Di per sé, il personaggio e il terreno sono entrambi invisibili, 
+  quindi l'applicazione utilizza la visualizzazione di debug 
+  per mostrare cosa sta accadendo nello spazio fisico.
+. Il metodo `onGround()` verifica se il personaggio è supportato 
+  da una superficie solida (contrariamente al salto o alla caduta).
 
-Since directly created characters don't look like much,
-even in debug visualization,
-they are mostly used to represent players in single-player games
-with a first-person viewpoint.
+Poiché i personaggi creati direttamente non hanno un aspetto molto dettagliato, nemmeno nella visualizzazione di debug, vengono principalmente utilizzati per rappresentare i giocatori nei giochi in single-player con una visuale in prima persona.
 
 == CharacterControl
 
-To associate a character with a spatial, there's a
-{url-api}/control/CharacterControl.html[`CharacterControl`] class
-that implements the {url-api}/control/PhysicsControl.html[`PhysicsControl`]
-interface.
+Per associare un personaggio a uno spatial, è disponibile la classe
+{url-api}/control/CharacterControl.html[`CharacterControl`]
+che implementa l'interfaccia {url-api}/control/PhysicsControl.html[`PhysicsControl`].
 
-NOTE: For a {url-api}/control/CharacterControl.html[`CharacterControl`],
-the physics control and its collision object are *not* the same object!
-In fact, no collision object is created until the control is added to a spatial.
+NOTA: Per il {url-api}/control/CharacterControl.html[`CharacterControl`],
+Il controllo fisico e il suo oggetto di collisione *non* sono lo stesso oggetto! In realtà, nessun oggetto di collisione viene creato fino a quando il controllo viene aggiunto a uno spazio (spatial).
 
-To access the collision object associated with a control,
-use `characterControl.getCharacter()`.
-To access the control associated with a collision object, use:
+Per accedere all'oggetto di collisione associato a un controllo, utilizza `characterControl.getCharacter()`. Per accedere al controllo associato a un oggetto di collisione puoi utilizzare:
 
 [source,java]
 ----
@@ -74,87 +62,79 @@ To access the control associated with a collision object, use:
 ----
 
 {url-tutorial}/HelloCharacterControl.java[HelloCharacterControl]
-is a simple application that demonstrates
-the creation of a {url-api}/control/CharacterControl.html[`CharacterControl`].
+È un'applicazione semplice che dimostra la creazione di un {url-api}/control/CharacterControl.html[`CharacterControl`].
 
-Things to notice about the app:
+Cose da notare riguardo all'applicazione:
 
-. The character's collision shape is a capsule.
-. The center of the Jaime model is located between its feet.
-  If the control were directly attached to the model,
-  its capsule shape would be off-center.
-  In order to match the model to the physics, the control is attached instead
-  to a `centerNode` located near Jaime's chest.
-. Because control provides convenience methods
-  such as `onGround()` and `jump()`,
-  the app never accesses the collision object directly.
+. La forma di collisione del personaggio è una capsula.
+. Il centro del modello Jaime è posizionato tra i suoi piedi.
+  Se il controllo fosse attaccato direttamente al modello, 
+  la sua forma di capsula sarebbe spostata rispetto al centro. 
+  Per far corrispondere il modello alla fisica, il controllo viene invece collegato a un `centerNode` posizionato vicino al petto di Jaime.
+. Poiché il controllo fornisce metodi di comodità come `onGround()` e `jump()`, l'applicazione non accede mai direttamente all'oggetto di collisione.
 
-== Walking
+== Camminare
 
-A character's walking motion is controlled by its _walk direction_ vector.
-During each simulation step, the horizontal component of the walk direction
-gets added to the character's location.
-To stop the character from walking, invoke `setWalkDirection(Vector3f.ZERO)`.
+Il movimento a piedi di un personaggio è controllato dal suo vettore _walk direction_ vector.
+Durante ciascun step di simulazione, la componente orizzontale della direzione di camminata viene aggiunta alla posizione del personaggio.
+Per fermare il personaggio durante la camminata, invoca  `setWalkDirection(Vector3f.ZERO)`.
 
-NOTE: Despite its name, the walk direction need not be a unit vector.
+NOTA: Nonostante il nome, la direzione di camminata non deve necessariamente essere un vettore unitario.
 
-{url-tutorial}/HelloWalk.java[HelloWalk] demonstrates
-keyboard-controlled motion of a physics character.
-Things to notice while running the app:
+{url-tutorial}/HelloWalk.java[HelloWalk] Dimostra il movimento
+controllato dalla tastiera di un personaggio fisico.
+Cose da notare durante l'esecuzione dell'app:
 
-. Move the mouse to turn the camera.
-. Because the app uses a first-person viewpoint, the character is invisible.
-  Nonetheless, the character's *shadow* can be seen. Find it!
-. Press kbd:[Space bar] to jump.
-. Press kbd:[W] to walk in the camera's forward direction.
-. Some of the mountains have slopes too steep for the character to climb.
+. Muovi il mouse per orientare la telecamera.
+. Poiché l'app utilizza una visuale in prima persona, il personaggio è invisibile. 
+  Tuttavia, *l'ombra* del personaggio può essere vista. Trovala!
+. Premi kbd:[Space bar] per saltare.
+. Premi kbd:[W] per camminare nella direzione della camera.
+. Alcune delle montagne hanno pendenze troppo ripide per permettere al personaggio di scalarle.
 
-For an example using a third-person viewpoint,
-see {url-tutorial}/HelloWalkOtoCc.java[HelloWalkOtoCc].
+Per un esempio che utilizza una visuale in terza persona,
+consulta: {url-tutorial}/HelloWalkOtoCc.java[HelloWalkOtoCc].
 
-. Press kbd:[Space bar] to jump.
-. Press kbd:[U] to walk in the camera's forward direction.
-. Press kbd:[H] to walk to the camera's left.
-. Press kbd:[J] to walk in the direction opposite
-  from the camera's forward direction.
-. Press kbd:[K] to walk to the camera's right.
+. Premi kbd:[Space bar] per saltare.
+. Premi kbd:[U] per camminare nella direzione della camera.
+. Premi kbd:[H] per camminare verso la sinistra della camera.
+. Premi kbd:[J] per camminare verso la direzione opposta della camera.
+. Premi kbd:[K] per camminare verso la destra della camera.
 
-== Configuration
+== Configurazione
 
-The configuration parameters described in this section
-apply to both `PhysicsCharacter` and `CharacterControl`.
-The control provides convenience methods to get/set some of these parameters.
-The rest may be accessed by way of `characterControl.getCharacter()`.
+I parametri di configurazione descritti in questa sezione
+si applicano sia a `PhysicsCharacter` che a `CharacterControl`. 
+Il controllo fornisce metodi di comodità per ottenere/impostare alcuni di questi parametri. 
+Gli altri possono essere accessi tramite `characterControl.getCharacter()`.
 
-=== Gravity and up direction
+=== Gravitazione e direzione "su"
 
-The _up direction_ of a physics character is a unit vector
-that points in the direction opposite its gravity vector.
-By default, the up direction is (0,1,0) and
-the gravity vector is (0,-29.4,0).
+La _up direction_  di un personaggio fisico è un vettore unitario che punta
+nella direzione opposta al suo vettore di gravità.
+Per impostazione predefinita, la direzione su è (0, 1, 0) e
+il vettore di gravità è (0, -29.4, 0).
 
-NOTE: A character's default gravity is 3x stronger
-than the default gravity of a {url-api}/PhysicsSpace.html[`PhysicsSpace`].
+NOTA: La gravità predefinita di un personaggio è 3 volte 
+più forte rispetto alla gravità predefinita di un {url-api}/PhysicsSpace.html[`PhysicsSpace`].
 
-NOTE: Unlike the gravity of a rigid body, a character's gravity is never
-overridden by any physics space.
+NOTA: A differenza della gravità di un corpo rigido, 
+la gravità di un personaggio non viene mai sovrascritta da alcuno spazio fisico.
 
-To alter a character's gravity vector,
-use `character.setGravity(Vector3f)`.
+Per modificare il vettore di gravità di un personaggio, 
+utilizza `character.setGravity(Vector3f)`.
 
-Altering the gravity vector automatically updates the character's up direction.
-To alter the *magnitude* of a character's gravity
-(without changing its direction) use `character.setGravity(float)`.
+L'alterazione del vettore di gravità aggiorna automaticamente la direzione "su" del personaggio.
 
-To alter a character's up direction, use `character.setUp(Vector3f)`.
-Altering the up direction automatically updates the gravity vector.
+Per modificare la magnitudine della gravità di un personaggio (senza cambiare la sua direzione), 
+utilizza: `character.setGravity(float)`.
 
-=== Jump speed
+Per modificare la direzione "su" di un personaggio, utilizza: `character.setUp(Vector3f)`.
+L'alterazione della direzione "su" aggiorna automaticamente il vettore di gravità del personaggio.
 
-If a character jumps in its up direction,
-its predicted rise time and jump height
-are determined by its gravity and jump speed.
-Roughly speaking:
+=== Velocità di salto
+
+Se un personaggio salta nella sua direzione "su", il tempo di salita previsto e l'altezza del salto sono determinati dalla sua gravità e dalla velocità di salto. In termini approssimativi:
 
 [source,java]
 ----
@@ -164,112 +144,108 @@ float riseSeconds = v0 / g;
 float jumpHeight = v0 * v0 / (2f * g);
 ----
 
-The default jump speed is 10 psu per second.
-To alter a character's jump speed, use `character.setJumpSpeed(float)`.
+La velocità di salto predefinita è di 10 psu.
+Per modificare la velocità di salto di un personaggio, utilizza: `character.setJumpSpeed(float)`.
 
-=== Fall speed
+=== Velocità di caduta
 
-_Fall speed_ limits the speed of a falling character.
-To be realistic, it should be larger than the character's jump speed.
+_Fall speed_ limita la velocità di un personaggio in caduta.
+Per essere realistico, la velocità di caduta dovrebbe essere maggiore della velocità di salto del personaggio.
 
-The default fall speed is 55 psu per second.
-To alter a character's fall speed, use `character.setFallSpeed(float)`.
+La velocità di caduta predefinita è di 55 psu.
+Per modificare la velocità di caduta di un personaggio, utilizza: `character.setFallSpeed(float)`.
 
-=== Step height
+=== Altezza del gradino
 
-_Step height_ limits how high a step the character can climb.
-To be realistic, it should be less than the character's height.
+_Step height_ limita l'altezza massima di un gradino che il personaggio può superare.
+Per essere realistico, dovrebbe essere inferiore all'altezza del personaggio.
 
-A character's initial step height is set by the constructor.
-To alter it, use `character.setStepHeight(float)`.
+L'altezza iniziale del gradino di un personaggio è impostata dal costruttore.
+Per modificarla, utilizza: `character.setStepHeight(float)`.
 
-=== Maximum slope
+=== Massima pendenza
 
-_Maximum slope_ limits how steep a slope the character can climb.
-It is expressed as an angle in radians relative to the horizontal plane.
+_Maximum slope_ Limita quanto ripida può essere una pendenza che il personaggio può scalare.
+Viene espressa come un angolo in radianti rispetto al piano orizzontale.
 
-The default maximum slope is {pi}/4, indicating a 45-degree angle.
-To alter it, use `character.setMaxSlope(float)`.
+La pendenza massima predefinita è di {pi}/4, indicando un angolo di 45 gradi.
+Per modificarla, usa: `character.setMaxSlope(float)`.
 
-=== Contact response
+=== Risposta ai contatti
 
-As with a rigid body, you can disable the contact response of a character using
+Come con un corpo rigido, è possibile disabilitare la risposta ai contatti di un personaggio utilizzando
 `character.setContactResponse(false)`.
 
-Disabling a character's contact response
-will compel it to fall, at least until contact response is re-enabled.
+Disabilitando la risposta ai contatti di un personaggio, lo obbligherà a cadere, almeno fino a quando la risposta ai contatti non verrà nuovamente abilitata.
 
 == BetterCharacterControl
 
-Many limitations of
-{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`] and
+Molte limitazioni dei
+{url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`] e
 {url-api}/control/CharacterControl.html[`CharacterControl`]
-are hardcoded into Bullet.
-To work around these limitations,
-you may wish to implement your own physics controls for characters.
+sono codificate direttamente in Bullet.
+Per aggirare queste limitazioni, potresti desiderare di implementare i tuoi controlli fisici personalizzati per i personaggi.
 
 {url-api}/control/BetterCharacterControl.html[`BetterCharacterControl`] (BCC)
-is a custom character control that implements ducking and look direction.
-You can use it as a model for implementing your own physics controls.
+Si tratta di un controllo fisico personalizzato che implementa l'azione di accovacciamento e la direzione dello sguardo. Puoi utilizzarlo come modello per implementare i tuoi controlli fisici personalizzati.
 
-NOTE: BCC is based
-on {url-api}/objects/PhysicsRigidBody.html[`PhysicsRigidBody`],
-not {url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`].
+NOTA: BCC si basa
+su {url-api}/objects/PhysicsRigidBody.html[`PhysicsRigidBody`],
+e non su {url-api}/objects/PhysicsCharacter.html[`PhysicsCharacter`].
 
-There are many differences between BCC and CharacterControl.
-For example:
+Ci sono molte differenze fra BCC e CharacterControl.
+Per esempio:
 
-. The collision objects are located differently.
-  BCC locates the collision object near the character's feet,
-  whereas CharacterControl centers it where a person's hips would be.
-. The APIs to instantly relocate the character are different.
-  BCC provides a `warp()` method,
-  whereas CharacterControl allows you to invoke `setPhysicsLocation()` directly.
-. The `setWalkDirection()` methods have different semantics.
-  In BCC, the argument is a velocity vector (psu per second),
-  whereas in CharacterControl the argument is a displacement (psu per time step).
-. The APIs to test whether the character has physical support are different.
-  BCC has `isOnGround()`,
-  whereas CharacterControl calls it `onGround()`.
-. A CharacterControl will pass right through
-  another CharacterControl without colliding,
-  whereas a BCC can detect collisions with other characters.
-. A BCC has mass and can be configured for kinematic motion,
-  whereas a CharacterControl has no mass and cannot be made kinematic.
-. BCC is more customizable than CharacterControl.
+. Gli oggetti di collisione sono posizionati in modo diverso.
+  BCC posiziona l'oggetto di collisione vicino ai piedi del personaggio,
+  mentre CharacterControl lo posiziona al centro, dove si troverebbero i fianchi di una persona.
+. Le API per ricollocare istantaneamente il personaggio sono diverse.
+  BCC fornisce un metodo `warp()`,
+  mentre CharacterControl ti consente di invocare direttamente `setPhysicsLocation()`.
+. I metodi `setWalkDirection()` hanno semantica diversa.
+  In BCC, l'argomento è un vettore di velocità (unità per secondo),
+  mentre in CharacterControl l'argomento è uno spostamento (unità per passo temporale).
+. Le API per verificare se il personaggio ha supporto fisico sono diverse.
+  BCC utilizza `isOnGround()`,
+  mentre CharacterControl la chiama `onGround()`.
+. Un CharacterControl attraverserà un altro CharacterControl senza collidere,
+  mentre un BCC può rilevare collisioni con altri personaggi.
+. Un BCC ha una massa e può essere configurato per il movimento cinematico,
+  mentre un CharacterControl non ha massa e non può essere reso cinematico.
+. Il BCC è più personalizzabile rispetto al CharacterControl.
 
-{url-tutorial}/HelloWalkOtoBcc.java[HelloWalkOtoBcc] is a simple application
-that demonstrates walking and jumping with BCC and a third-person viewpoint.
-The user interface is identical to HelloWalkOtoCc:
+{url-tutorial}/HelloWalkOtoBcc.java[HelloWalkOtoBcc] È un'applicazione semplice
+che dimostra il camminare e saltare con BCC e una visuale in terza persona.
+L'interfaccia utente è identica a HelloWalkOtoCc:
 
-. Press kbd:[Space bar] to jump.
-. Press kbd:[U] to walk in the camera's forward direction.
-. Press kbd:[H], kbd:[J], or kbd:[K] to walk in other directions.
+. Premi kbd:[Space bar] per saltare.
+. Premi kbd:[U] Per camminare nella direzione in avanti della telecamera.
+. Premi kbd:[H], kbd:[J], o kbd:[K] Per camminare in altre direzioni.
 
-== Related demo apps
+== Applicazioni demo correlate.
 
-The Jme3Examples subproject contains several demo apps
-that showcase physics characters.
+Il sottoprogetto Jme3Examples contiene diverse app demo
+che presentano personaggi fisici.
 
-* {url-jme3test}/bullet/TestQ3.java[The `TestQ3` demo app] demonstrates
-  a first-person walkthrough of a fictitious ancient temple.
-  It uses a directly created `PhysicsCharacter`.
-* The {url-jme3test}/bullet/TestPhysicsCharacter.java[`TestPhysicsCharacter`]
-  and {url-jme3test}/bullet/TestWalkingChar.java[`TestWalkingChar`]
-  demo apps use `CharacterControl` and a third-person viewpoint.
-** TestWalkingCharacter demonstrates the Oto model walking and shooting,
-   with appropriate skeleton animations.
-** TestPhysicsCharacter demonstrates the Sinbad model walking and jumping,
-   but doesn't use skeleton animations.
-* {url-jme3test}/bullet/TestBetterCharacter.java[The `TestBetterCharacter` demo app]
-  demonstrates the Jaime model walking, jumping, and ducking.
-  It uses BCC and a third-person viewpoint.
+* {url-jme3test}/bullet/TestQ3.java[The `TestQ3` demo app] Dimostra
+  una passeggiata in prima persona all'interno di un tempio antico fittizio.
+  Utilizza un `PhysicsCharacter` creato direttamente.
+* Le {url-jme3test}/bullet/TestPhysicsCharacter.java[`TestPhysicsCharacter`]
+  e {url-jme3test}/bullet/TestWalkingChar.java[`TestWalkingChar`]
+  app demo utilizzano `CharacterControl` e una visuale in terza persona.
+** TestWalkingCharacter dimostra il modello Oto che cammina e spara,
+  con le relative animazioni del scheletro.
+** TestPhysicsCharacter dimostra il modello Sinbad che cammina e salta,
+  ma non utilizza animazioni del scheletro.
+* {url-jme3test}/bullet/TestBetterCharacter.java[La `TestBetterCharacter` app demo]
+  Dimostra il modello Jaime che cammina, salta e si accovaccia.
+  Utilizza BCC e una visuale in terza persona.
 
-== Summary
+== Sommario
 
-* A physics character simulates a game character walking, jumping, and falling.
-* To associate a character with a spatial, use a `CharacterControl`.
-* For `CharacterControl`, the physics control
-  and its collision object are *not* the same object!
-* If the built-in character controls don't meet your needs,
-  you can implement your own.
+* Un personaggio fisico simula un personaggio di gioco che cammina, salta e cade.
+* Per associare un personaggio a uno spaziale, utilizza un `CharacterControl`.
+* Per `CharacterControl`, il controllo fisico
+  e il suo oggetto di collisione *non* sono lo stesso oggetto!
+* Se i controlli di personaggio integrati non soddisfano le tue esigenze,
+  puoi implementarne uno personalizzato.
