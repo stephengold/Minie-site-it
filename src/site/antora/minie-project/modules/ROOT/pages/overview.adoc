@@ -41,7 +41,7 @@ né per ricerche scientifiche.
 Per la fisica 2-D considera di usare http://www.dyn4j.org/[dyn4j] invece.
 
 Per poter utilizzare l'ultima versione di {Project},
-avrai bisogno delle librerie 3.6 JMonkeyEngine.
+avrai bisogno delle librerie 3.6.1 JMonkeyEngine.
 Per più informazioni sulle dipendenze di {Project} controlla xref:depends.adoc[La pagina delle dipendenze].
 
 Come JMonkeyEngine, {Project} e la sua documentazione suppone un certo di livello di abilità con il
